@@ -1,32 +1,3 @@
----
-title: "`surveydown`<br><span style='font-size: 0.7em;'>An open-source platform for programmable,<br>markdown-based surveys</span>"
-author: "<br>**Pingfan Hu**<br>George Washington University<br><br>USRSE'25"
-format:
-  revealjs: 
-    smaller: false
-    theme: styles/theme.scss
-    css: styles/slides.css
-    slide-number: true
-    embed-resources: true
-    auto-stretch: false
-    footer: "<a href='http://pingfanhu.com'>Pingfan Hu</a> - <a href='https://us-rse.org/usrse25/'>USRSE'25</a>"
-    preview-links: auto
-    link-external-newwindow: true
-    link-external-icon: false
-    center-title-slide: true
-    code-block-height: 650px
-    title-slide-attributes:
-      data-background-image: figs/logo-surveydown.png
-      data-background-size: 18%
-      data-background-opacity: "1"
-      data-background-position: right 20% center
-      class: custom-title-slide
-      style: text-align:left; max-width:70%;
-execute: 
-  warning: false
-  echo: false
----
-
 ```{r}
 #| label: setup
 #| include: false

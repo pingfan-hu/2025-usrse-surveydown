@@ -1,0 +1,931 @@
+---
+title: "`surveydown`<br><span style='font-size: 0.7em;'>An open-source platform for programmable,<br>markdown-based surveys</span>"
+author: "<br>**Pingfan Hu**<br>George Washington University<br><br>USRSE'25"
+format:
+  revealjs: 
+    smaller: false
+    theme: styles/theme.scss
+    css: styles/slides.css
+    slide-number: true
+    embed-resources: true
+    auto-stretch: false
+    footer: "<a href='http://pingfanhu.com'>Pingfan Hu</a> - <a href='https://us-rse.org/usrse25/'>USRSE'25</a>"
+    preview-links: auto
+    link-external-newwindow: true
+    link-external-icon: false
+    center-title-slide: true
+    code-block-height: 650px
+    title-slide-attributes:
+      data-background-image: figs/logo-surveydown.png
+      data-background-size: 18%
+      data-background-opacity: "1"
+      data-background-position: right 20% center
+      class: custom-title-slide
+      style: text-align:left; max-width:70%;
+execute: 
+  warning: false
+  echo: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+source("codes.R")
+```
+
+## I try to figure out what people want... {.black-centered .center}
+
+![](figs/crystal_ball.jpg){fig-align="center" width=500}
+
+## {.dark-centered .center}
+
+![](figs/prof-x.gif){fig-align="center" width="90%" style="border: 2px solid #5654A2;"}
+
+## {.light-centered .center}
+
+![](figs/demo.gif){fig-align="center" width="85%" style="border: 2px solid #5654A2;"}
+
+## WYSIWYG Interface {.light-centered .center}
+
+![](figs/google-form.png){fig-align="center" width="90%"}
+
+## {.light-centered .center}
+
+::: {.column width="70%"}
+![](figs/google-form.png)
+:::
+
+::: {.column width="30%"}
+
+### Limitations
+
+<br>
+
+::: {style="text-align: left;"}
+
+❌ Reproduciblity
+
+::: {.fragment}
+❌ Version control
+:::
+:::
+:::
+
+## {.light-centered .center}
+
+![](figs/version-control.png){fig-align="center" width="40%"}
+
+## {.light-centered .center}
+
+::: {.column width="70%"}
+![](figs/google-form.png)
+:::
+
+::: {.column style="width: 30%; text-align: left;"}
+
+### Limitations
+
+<br>
+
+❌ Reproduciblity
+
+❌ Version control
+
+❌ Limited features
+
+::: {.fragment}
+❌ Open source
+:::
+
+:::
+
+## {.dark-centered .center}
+
+::: {.column width="40%"}
+
+<br>
+<br>
+
+### Why not make surveys `code` based? 
+
+:::
+
+::: {.column width="10%"}
+:::
+
+::: {.column .fragment style="width: 40%; text-align: left;"}
+
+### ~~Limitations~~<br>Features
+
+✅ Reproducibility
+
+✅ Version control
+
+✅ Lots of features
+
+✅ Open source
+
+:::
+
+## Introducing `surveydown`! {.dark-centered .center style="font-size: 1.2em;"}
+
+<br>
+
+![](figs/logo-surveydown.png){fig-align="center" width=300}
+
+## In this talk, we will cover: {.light-centered .center}
+
+<br>
+
+::: {.grid-container style="height: 40vh;"}
+::: {.centered-container style="width: 500px;"}
+What is `surveydown`?
+:::
+
+::: {.centered-container style="width: 500px;"}
+How does it work?
+:::
+
+::: {.centered-container style="width: 500px;"}
+What can I do with it?
+:::
+
+::: {.centered-container style="width: 500px;"}
+What's next?
+:::
+:::
+
+## What is `surveydown`? {.dark-centered .center style="font-size: 1.2em;"}
+
+<br>
+
+![](figs/logo-surveydown.png){fig-align="center" width=300}
+
+## R package that renders <span style="color: #2C8475;">Quarto</span> files into <span style="color: #2C8475;">surveys</span> {.light-centered .center}
+
+<br>
+
+![](figs/what-is-surveydown.png){fig-align="center" width=100%}
+
+## {style="font-size: 0.7em;"}
+
+::: {.column width="48%"}
+
+### Original `qmd` file {style="text-align: center;"}
+
+<br>
+<br>
+
+::: {style="text-align: center;"}
+Markdown + `R code` chunks
+:::
+
+```{r}
+#| results: 'asis'
+quarto_r_html()
+```
+
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column .fragment width="48%"}
+
+### Rendered HTML {style="text-align: center;"}
+
+<br>
+
+![](figs/quarto-r-html.png){fig-align="center" width=100%}
+
+:::
+
+## {style="font-size: 0.7em;"}
+
+::: {.column width="48%"}
+
+### Original `qmd` file {style="text-align: center;"}
+
+<br>
+<br>
+
+::: {style="text-align: center;"}
+Markdown + `Python code` chunks
+:::
+
+```{r}
+#| results: 'asis'
+quarto_python_pdf()
+```
+
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column .fragment width="48%"}
+
+### Rendered PDF {style="text-align: center;"}
+
+<br>
+
+![](figs/quarto-python-pdf.png){fig-align="center" width=100%}
+
+:::
+
+## {.light-centered .center}
+
+![](figs/what-is-surveydown.png){width=100%}
+
+
+## {style="font-size: 0.7em;"}
+
+::: {.column width="48%"}
+
+### `survey.qmd` {style="text-align: center;"}
+
+```{r}
+#| results: 'asis'
+surveycode()
+```
+
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="48%"}
+
+### Rendered Survey {style="text-align: center;"}
+
+<br>
+
+![](figs/survey-question.png){fig-align="center" width=600}
+
+:::
+
+## {style="font-size: 0.7em;"}
+
+::: {.column width="48%"}
+
+### `survey.qmd` {style="text-align: center;"}
+
+```{r}
+#| results: 'asis'
+surveycode("1-5")
+```
+
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="48%"}
+
+::: {.bubble-left style="display: block; transform: none; top: 10%;"}
+YAML header for a "clean" output
+:::
+
+:::
+
+## {style="font-size: 0.7em;"}
+
+::: {.column width="48%"}
+
+### `survey.qmd` {style="text-align: center;"}
+
+```{r}
+#| results: 'asis'
+surveycode("7-9")
+```
+
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="48%"}
+
+::: {.bubble-left style="display: block; transform: none; top: 25%;"}
+Load the `surveydown` Package
+:::
+
+:::
+
+## {style="font-size: 0.7em;"}
+
+::: {.column width="48%"}
+
+### `survey.qmd` {style="text-align: center;"}
+
+```{r}
+#| results: 'asis'
+surveycode("11,29")
+```
+
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="48%"}
+
+::: {.bubble-left style="display: block; transform: none; top: 32%;"}
+Use Quarto fences (`:::`)
+
+to define survey pages
+:::
+
+:::
+
+## {style="font-size: 0.7em;"}
+
+::: {.column width="48%"}
+
+### `survey.qmd` {style="text-align: center;"}
+
+```{r}
+#| results: 'asis'
+surveycode("13-27")
+```
+
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="48%"}
+
+::: {.bubble-left style="display: block; transform: none; top: 45%;"}
+Page content
+
+- Markdown for text, images, etc.
+- `sd_question()` for survey questions
+- `sd_next()` for page navigation
+:::
+
+:::
+
+## {style="font-size: 0.7em;"}
+
+::: {.column width="48%"}
+
+### `survey.qmd` {style="text-align: center;"}
+
+```{r}
+#| results: 'asis'
+surveycode()
+```
+
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="48%"}
+
+### Rendered Survey {style="text-align: center;"}
+
+<br>
+
+![](figs/survey-question.png){fig-align="center" width=600}
+
+:::
+
+## {style="font-size: 0.7em;"}
+
+::: {.column width="48%"}
+
+### `survey.qmd` {style="text-align: center;"}
+
+```{r}
+#| results: 'asis'
+surveycode("18,20,21,22")
+```
+
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="48%"}
+
+### Rendered Survey {style="text-align: center;"}
+
+![](figs/survey-question.png){fig-align="center" width=600}
+
+![](figs/has-fav-hero.png){fig-align="center" width=180 style="margin-top: -40px;"}
+
+:::
+
+## Wait a minute...<br>Quarto renders to <span style="color: #FFB84D;">static</span> html pages, right? {.dark-centered .center}
+
+<br>
+
+![](figs/batman-think.gif){fig-align="center" width=40%}
+
+## <span style="color: #FFB84D;">Shiny</span> to the rescue! {.dark-centered .center}
+
+<br>
+
+::: {.column}
+![](figs/logo-shiny.png){width=300}
+:::
+
+::: {.column}
+![](figs/batman-thumbs-up.gif){fig-align="center" width=70%}
+:::
+
+## {.light-centered .center}
+
+![](figs/what-is-surveydown.png){width=100%}
+
+## {.light-centered .center}
+
+![](figs/what-is-surveydown-2.png){width=100%}
+
+## {.light-centered .center}
+
+![](figs/what-is-surveydown-3.png){width=100%}
+
+## A complete `surveydown` survey {.light-centered .center}
+
+<br>
+
+::: {.fragment .column style="width: 48%;"}
+`survey.qmd`
+
+A **Quarto doc** defining the survey content (pages, text, images, questions, etc).
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.fragment .column style="width: 48%;"}
+`app.R`
+
+An **R script** defining the survey Shiny app.
+:::
+
+## Don't panic! {.dark-centered .center}
+
+<br>
+
+![](figs/spiderman-oh-no.gif){width=80%}
+
+## {style="font-size: 0.9em;"}
+
+::: {.column width="60%"}
+
+### `app.R` {style="text-align: center;"}
+
+<br>
+
+```{r}
+#| results: 'asis'
+appcode_short()
+```
+
+:::
+
+## {style="font-size: 1em;"}
+
+::: {.column style="width: 60%; font-size: 0.9em;"}
+
+### `app.R` {style="text-align: center;"}
+
+<br>
+
+```{r}
+#| results: 'asis'
+appcode_short("3,7")
+```
+
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column style="width: 36%; font-size: 0.7em;"}
+
+::: {.bubble-left style="display: block; transform: none; top: 22%;"}
+Render `survey.qmd` as UI
+:::
+
+::: {.bubble-left style="display: block; transform: none; top: 37%;"}
+Run the `surveydown` server
+:::
+
+:::
+
+## Wait a minute...<br>How do you store the response <span style="color: #FFB84D;">data</span>? {.dark-centered .center}
+
+<br>
+
+![](figs/superman-think.gif){fig-align="center" width=50%}
+
+## <span style="color: #FFB84D;">PostgreSQL</span> to the rescue! {.dark-centered .center}
+
+<br>
+
+::: {.column}
+
+<br>
+
+![](figs/logo-postgres.png){width=300}
+:::
+
+::: {.column}
+![](figs/superman-oh-yeah.gif){fig-align="center" width=60%}
+:::
+
+## [`supabase.com`](https://supabase.com) {.light-centered .center}
+
+![](figs/supabase-table.png){width=100%}
+
+
+##
+
+::: {.column style="width: 58%; font-size: 0.9em;"}
+
+### `app.R` {style="text-align: center;"}
+
+<br>
+
+```{r}
+#| results: 'asis'
+appcode_long("3,4,10")
+```
+
+:::
+
+::: {.column width="2%"}
+:::
+
+::: {.column style="width: 40%; font-size: 0.7em;"}
+
+::: {.bubble-left style="display: block; transform: none; top: 21%;"}
+Store credentials
+
+Connect to the database
+:::
+
+::: {.bubble-left style="display: block; transform: none; top: 47%;"}
+Pass connection to `sd_server()`
+:::
+
+:::
+
+## Locally get the data {.light-centered .center}
+
+![](figs/get-data.png){width=100%}
+
+## What is `surveydown`? {.dark-centered .center style="font-size: 1.2em;"}
+
+<br>
+
+![](figs/logo-surveydown.png){fig-align="center" width=300}
+
+## {.light-centered .center}
+
+![](figs/technologies.svg){fig-align="center" width=100%}
+
+## What can `surveydown` do? {.dark-centered .center}
+
+## `surveydown` is feature-packed! {.light-centered .center}
+
+![](figs/features.png){width=75%}
+
+## Feature Highlights {.light-centered .center}
+
+<br>
+
+::: {.grid-container style="height: 20vh;"}
+::: {.centered-container style="width: 500px;"}
+Question types
+:::
+
+::: {.centered-container style="width: 500px;"}
+Conditional logic
+:::
+:::
+
+## 12 Built-in Question Types {.light-centered .center}
+
+::: {.four-by-three-grid}
+`text`
+
+`textarea`
+
+`numeric`
+
+`mc`
+
+`mc_multiple`
+
+`mc_buttons`
+
+`mc_multiple_buttons`
+
+`select`
+
+`slider`
+
+`slider_numeric`
+
+`date`
+
+`daterange`
+:::
+
+## Question Type: `text` {.light-centered .center}
+
+<br>
+
+::: {.column style="width: 48%; font-size: 0.7em;"}
+
+```{r}
+#| results: 'asis'
+question_text()
+```
+
+:::
+
+::: {.column style="width: 4%; font-size: 0.7em; text-align: center;"}
+
+<br>
+
+### -->
+:::
+
+::: {.column style="width: 48%; margin-left: -10px"}
+![](figs/question-text.png){width=100%}
+:::
+
+## Question Type: `mc` {.light-centered .center}
+
+<br>
+
+::: {.column style="width: 52%; font-size: 0.7em;"}
+
+```{r}
+#| results: 'asis'
+question_mc()
+```
+
+:::
+
+::: {.column style="width: 4%; font-size: 0.7em; text-align: center;"}
+
+<br>
+<br>
+
+### -->
+:::
+
+::: {.column style="width: 44%; margin-left: -10px"}
+![](figs/question-mc.png){width=100%}
+:::
+
+## Question Type: `mc_buttons` {.light-centered .center}
+
+<br>
+
+::: {.column style="width: 48%; font-size: 0.7em;"}
+
+<br>
+
+```{r}
+#| results: 'asis'
+question_mc_buttons()
+```
+
+:::
+
+::: {.column style="width: 4%; font-size: 0.7em; text-align: center;"}
+
+<br>
+<br>
+<br>
+<br>
+
+### -->
+:::
+
+::: {.column style="width: 48%; margin-left: -10px"}
+![](figs/question-mc-buttons.png){width=100%}
+:::
+
+## Question Type: `slider_numeric` {.light-centered .center}
+
+<br>
+
+::: {.column style="width: 48%; font-size: 0.7em;"}
+
+```{r}
+#| results: 'asis'
+question_slider_numeric()
+```
+
+:::
+
+::: {.column style="width: 4%; font-size: 0.7em; text-align: center;"}
+
+<br>
+<br>
+
+### -->
+:::
+
+::: {.column style="width: 48%; margin-left: -10px"}
+![](figs/question-slider-numeric.png){width=100%}
+:::
+
+## Conditional logic {.light-centered .center}
+
+<br>
+
+::: {.grid-container style="height: 30vh;"}
+::: {.centered-container style="width: 500px;"}
+Conditional showing
+:::
+
+::: {.centered-container style="width: 500px;"}
+Conditional skipping
+:::
+
+::: {.centered-container style="width: 500px;"}
+Conditional stopping
+:::
+:::
+
+## Conditional showing - `sd_show_if()` {.light-centered}
+
+<br>
+
+![](figs/conditional-showing.gif){width=50% style="border: 2px solid #5654A2;"}
+
+## Conditional showing - `sd_show_if()` {.light-centered}
+
+<br>
+
+::: {.column style="width: 49%; font-size: 0.7em;"}
+
+### `survey.qmd` {style="text-align: center;"}
+
+```{r}
+#| results: 'asis'
+show_if_survey()
+```
+
+:::
+
+::: {.column width="2%"}
+:::
+
+::: {.column .fragment style="width: 49%; font-size: 0.7em;"}
+
+### `app.R` {style="text-align: center;"}
+
+```{r}
+#| results: 'asis'
+show_if_app()
+```
+
+::: {.bubble-top style="text-align: center; display: block; transform: none; top: 40%;"}
+Condition ~ Target
+
+<br>
+
+"If {condition}, then show {target}"
+:::
+:::
+
+## Conditional skipping - `sd_skip_if()`<br><br> Conditional stopping - `sd_stop_if()` {.light-centered .center}
+
+## If it works in <span style="color: #FFB84D;">Shiny</span>,<br>it works in `surveydown`. {.dark-centered .center style="font-size: 1.2em;"}
+
+## Embedding an interactive map with `leaflet`: {.light-centered .center}
+
+![](figs/leaflet.gif){fig-align="center" width=65%}
+
+## {.dark-centered .center}
+
+::: {.column style="width: 49%;"}
+![](figs/deadpool-clap.gif)
+:::
+
+::: {.column style="width: 2%;"}
+:::
+
+::: {.column style="width: 49%;"}
+
+<br>
+
+### `surveydown` + LLMs<br>is pretty cool {style="font-size: 1.2em;"}
+:::
+
+## Generate surveys with LLMs! {.light-centered .center}
+
+![](figs/llm.gif){fig-align="center" width=80% style="border: 2px solid #5654A2;"}
+
+## What's next? {.dark-centered .center style="font-size: 1.2em;"}
+
+## Try out the companion [`sdstudio`](https://github.com/surveydown-dev/sdstudio/) package: {.light-centered .center}
+
+<br>
+
+::: {.centered-container style="width: 500px;"}
+`sdstudio::launch()`
+:::
+
+##
+
+![](figs/sdstudio-build.gif){fig-align="center" width=100% style="border: 2px solid #5654A2;"}
+
+##
+
+![](figs/sdstudio-preview.gif){fig-align="center" width=100% style="border: 2px solid #5654A2;"}
+
+##
+
+![](figs/sdstudio-data.gif){fig-align="center" width=100% style="border: 2px solid #5654A2;"}
+
+## With great power comes great responsibility. {.dark-centered .center style="font-size: 1.2em;"}
+
+## Meet the team! {.light-centered .center}
+
+<br>
+
+::: {.column width="33%"}
+
+[![](figs/member-john-helveston.png){fig-align="center" width="80%" .round-image}](https://www.jhelvy.com)
+
+John Helveston, Ph.D.
+:::
+
+::: {.column width="33%"}
+
+<a href="https://pingfanhu.com" target="_blank">![](figs/member-pingfan-hu.jpg){fig-align="center" width="80%" .round-image}</a>
+
+Pingfan Hu
+:::
+
+::: {.column width="33%"}
+[![](figs/member-bogdan-bunea.jpg){fig-align="center" width="80%" .round-image}](https://www.linkedin.com/in/bogdanbt/)
+
+Bogdan Bunea
+:::
+
+## Ways to help: {.light-centered .center}
+
+<br>
+
+::: {.centered-container style="width: 85%;"}
+[github.com/surveydown-dev/surveydown/](https://github.com/surveydown-dev/surveydown/)
+:::
+
+<br>
+
+::: {.column style="width: 60; text-align: left;"}
+
+- Try it out!
+- Give it a ⭐
+- Post an issue
+- Join the GitHub discussion
+- Contribute a template
+
+:::
+
+::: {.column width="40%"}
+![](figs/qr-surveydown-repo.svg){fig-align="center" width=70% style="border: 2px solid #5654A2;"}
+:::
+
+## {.dark-centered .center}
+
+::: {.column width="55%"}
+
+### Thanks! {style="font-size: 1.5em;"}
+
+![](figs/deadpool-heart.gif){fig-align="center" width=70% style="border: 2px solid #5654A2;"}
+
+This work was sponsored by the Alfred P. Sloan Foundation.
+
+:::
+
+::: {.column width="45%"}
+
+::: {.centered-container style="width: 80%;"}
+[**surveydown.org**](https://surveydown.org)
+:::
+
+<br>
+
+![](figs/qr-surveydown-doc.svg){fig-align="center" width=70% style="border: 2px solid #5654A2;"}
+
+::: {style="text-align: right;"}
+[`jhelvy.com`](https://www.jhelvy.com)
+
+<a href="https://pingfanhu.com" target="_blank">`pingfanhu.com`</a>
+:::
+:::

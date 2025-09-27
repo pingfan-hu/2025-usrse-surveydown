@@ -1,0 +1,17 @@
+---
+title: "PDF File with Python Code"
+format: pdf
+---
+
+# Hello, World!
+
+This is a simple **PDF** file with *Python* code.
+
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+data = np.random.normal(0, 1, 100)
+plt.hist(data)
+plt.show()
+```

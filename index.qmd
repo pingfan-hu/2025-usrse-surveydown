@@ -337,7 +337,7 @@ surveycode("13-27")
 ::: {.bubble-left style="display: block; transform: none; top: 45%;"}
 Page content
 
-- Markdown for text, images, etc.
+- Markdown for texts, images, etc.
 - `sd_question()` for survey questions
 - `sd_next()` for page navigation
 :::
@@ -433,7 +433,7 @@ surveycode("18,20,21,22")
 ::: {.fragment .column style="width: 48%;"}
 `survey.qmd`
 
-A **Quarto doc** defining the survey content (pages, text, images, questions, etc).
+A **Quarto doc** defining the survey content (pages, texts, images, questions, etc).
 :::
 
 ::: {.column width="4%"}

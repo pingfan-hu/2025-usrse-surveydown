@@ -1,7 +1,7 @@
 ```{r}
 #| label: setup
 #| include: false
-source("codes.R")
+source("scripts.R")
 ```
 
 ## I try to figure out what people want... {.black-centered .center}
@@ -84,7 +84,7 @@ source("codes.R")
 <br>
 <br>
 
-### Why not make surveys `code` based? 
+### Why not make surveys from `code`? 
 
 :::
 

@@ -10,7 +10,14 @@ source("codes.R")
 
 ## {.dark-centered .center}
 
-![](figs/prof-x.gif){fig-align="center" width="90%" style="border: 2px solid #5654A2;"}
+::: {style="position: relative; text-align: center; width: 100%;"}
+![](figs/prof-x.gif){width="90%" style="border: 2px solid #5654A2;"}
+
+
+::: {.fragment}
+![](figs/member-john-helveston.png){style="position: absolute; top: 11%; left: 44%; transform: translateX(-50%); width: 22%; border-radius: 50%; z-index: 10;"}
+:::
+:::
 
 ## {.light-centered .center}
 

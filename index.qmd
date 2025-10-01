@@ -10,18 +10,22 @@ source("scripts.R")
 
 ## {.dark-centered .center}
 
-::: {style="position: relative; text-align: center; width: 100%;"}
-![](figs/prof-x.gif){width="90%" style="border: 2px solid #5654A2;"}
-
-
-::: {.fragment}
-![](figs/member-john-helveston.png){style="position: absolute; top: 11%; left: 44%; transform: translateX(-50%); width: 22%; border-radius: 50%; z-index: 10;"}
+::: {.column width="20%"}
+::: {layout="[[-1], [1], [-1]]"}
+![](figs/member-john-helveston.png){fig-align="center" width="80%" .round-image}
 :::
+
+Prof. John Helveston
+
+:::
+
+::: {.column .fragment width="80%"}
+![](figs/prof-x.gif){width="90%" .purple-border}
 :::
 
 ## {.light-centered .center}
 
-![](figs/demo.gif){fig-align="center" width="85%" style="border: 2px solid #5654A2;"}
+![](figs/demo.gif){fig-align="center" width="85%" .purple-border}
 
 ## WYSIWYG Interface {.light-centered .center}
 
@@ -144,6 +148,12 @@ What's next?
 <br>
 
 ![](figs/what-is-surveydown.png){fig-align="center" width=100%}
+
+## <span style="color: #2C8475;">Quarto</span> is a publishing system {.light-centered .center}
+
+<br>
+
+![](figs/quarto-process.png){fig-align="center" width=100% .purple-border}
 
 ## {style="font-size: 0.7em;"}
 
@@ -449,7 +459,7 @@ An **R script** defining the survey Shiny app.
 
 <br>
 
-![](figs/spiderman-oh-no.gif){width=80%}
+![](figs/spiderman-oh-no.gif){width=80% .purple-border}
 
 ## {style="font-size: 0.9em;"}
 
@@ -500,7 +510,7 @@ Run the `surveydown` server
 
 <br>
 
-![](figs/superman-think.gif){fig-align="center" width=50%}
+![](figs/superman-think.gif){fig-align="center" width=50% .purple-border}
 
 ## <span style="color: #FFB84D;">PostgreSQL</span> to the rescue! {.dark-centered .center}
 
@@ -514,7 +524,7 @@ Run the `surveydown` server
 :::
 
 ::: {.column}
-![](figs/superman-oh-yeah.gif){fig-align="center" width=60%}
+![](figs/superman-oh-yeah.gif){fig-align="center" width=60% .purple-border}
 :::
 
 ## [`supabase.com`](https://supabase.com) {.light-centered .center}
@@ -554,7 +564,7 @@ Pass connection to `sd_server()`
 
 :::
 
-## Locally get the data {.light-centered .center}
+## {.light-centered .center}
 
 ![](figs/get-data.png){width=100%}
 
@@ -636,40 +646,15 @@ question_text()
 ### -->
 :::
 
-::: {.column style="width: 48%; margin-left: -10px"}
+::: {.column style="width: 48%; margin-left: -10px; margin-top: -10px;"}
 ![](figs/question-text.png){width=100%}
-:::
-
-## Question Type: `mc` {.light-centered .center}
-
-<br>
-
-::: {.column style="width: 52%; font-size: 0.7em;"}
-
-```{r}
-#| results: 'asis'
-question_mc()
-```
-
-:::
-
-::: {.column style="width: 4%; font-size: 0.7em; text-align: center;"}
-
-<br>
-<br>
-
-### -->
-:::
-
-::: {.column style="width: 44%; margin-left: -10px"}
-![](figs/question-mc.png){width=100%}
 :::
 
 ## Question Type: `mc_buttons` {.light-centered .center}
 
 <br>
 
-::: {.column style="width: 48%; font-size: 0.7em;"}
+::: {.column style="width: 48%; font-size: 0.7em; margin-top: -10px;"}
 
 <br>
 
@@ -690,33 +675,8 @@ question_mc_buttons()
 ### -->
 :::
 
-::: {.column style="width: 48%; margin-left: -10px"}
+::: {.column style="width: 48%; margin-left: -10px; margin-top: -30px;"}
 ![](figs/question-mc-buttons.png){width=100%}
-:::
-
-## Question Type: `slider_numeric` {.light-centered .center}
-
-<br>
-
-::: {.column style="width: 48%; font-size: 0.7em;"}
-
-```{r}
-#| results: 'asis'
-question_slider_numeric()
-```
-
-:::
-
-::: {.column style="width: 4%; font-size: 0.7em; text-align: center;"}
-
-<br>
-<br>
-
-### -->
-:::
-
-::: {.column style="width: 48%; margin-left: -10px"}
-![](figs/question-slider-numeric.png){width=100%}
 :::
 
 ## Conditional logic {.light-centered .center}
@@ -725,7 +685,7 @@ question_slider_numeric()
 
 ::: {.grid-container style="height: 30vh;"}
 ::: {.centered-container style="width: 500px;"}
-Conditional showing
+**Conditional showing**
 :::
 
 ::: {.centered-container style="width: 500px;"}
@@ -741,7 +701,7 @@ Conditional stopping
 
 <br>
 
-![](figs/conditional-showing.gif){width=50% style="border: 2px solid #5654A2;"}
+![](figs/conditional-showing.gif){width=50% .purple-border}
 
 ## Conditional showing - `sd_show_if()` {.light-centered}
 
@@ -779,8 +739,6 @@ Condition ~ Target
 :::
 :::
 
-## Conditional skipping - `sd_skip_if()`<br><br> Conditional stopping - `sd_stop_if()` {.light-centered .center}
-
 ## If it works in <span style="color: #FFB84D;">Shiny</span>,<br>it works in `surveydown`. {.dark-centered .center style="font-size: 1.2em;"}
 
 ## Embedding an interactive map with `leaflet`: {.light-centered .center}
@@ -790,7 +748,7 @@ Condition ~ Target
 ## {.dark-centered .center}
 
 ::: {.column style="width: 49%;"}
-![](figs/deadpool-clap.gif)
+![](figs/deadpool-clap.gif){.purple-border}
 :::
 
 ::: {.column style="width: 2%;"}
@@ -805,7 +763,7 @@ Condition ~ Target
 
 ## Generate surveys with LLMs! {.light-centered .center}
 
-![](figs/llm.gif){fig-align="center" width=80% style="border: 2px solid #5654A2;"}
+![](figs/llm.gif){fig-align="center" width=80% .purple-border}
 
 ## What's next? {.dark-centered .center style="font-size: 1.2em;"}
 
@@ -819,41 +777,17 @@ Condition ~ Target
 
 ##
 
-![](figs/sdstudio-build.gif){fig-align="center" width=100% style="border: 2px solid #5654A2;"}
+![](figs/sdstudio-build.gif){fig-align="center" width=100% .purple-border}
 
 ##
 
-![](figs/sdstudio-preview.gif){fig-align="center" width=100% style="border: 2px solid #5654A2;"}
+![](figs/sdstudio-preview.gif){fig-align="center" width=100% .purple-border}
 
 ##
 
-![](figs/sdstudio-data.gif){fig-align="center" width=100% style="border: 2px solid #5654A2;"}
+![](figs/sdstudio-data.gif){fig-align="center" width=100% .purple-border}
 
 ## With great power comes great responsibility. {.dark-centered .center style="font-size: 1.2em;"}
-
-## Meet the team! {.light-centered .center}
-
-<br>
-
-::: {.column width="33%"}
-
-[![](figs/member-john-helveston.png){fig-align="center" width="80%" .round-image}](https://www.jhelvy.com)
-
-John Helveston, Ph.D.
-:::
-
-::: {.column width="33%"}
-
-<a href="https://pingfanhu.com" target="_blank">![](figs/member-pingfan-hu.jpg){fig-align="center" width="80%" .round-image}</a>
-
-Pingfan Hu
-:::
-
-::: {.column width="33%"}
-[![](figs/member-bogdan-bunea.jpg){fig-align="center" width="80%" .round-image}](https://www.linkedin.com/in/bogdanbt/)
-
-Bogdan Bunea
-:::
 
 ## Ways to help: {.light-centered .center}
 
@@ -876,34 +810,41 @@ Bogdan Bunea
 :::
 
 ::: {.column width="40%"}
-![](figs/qr-surveydown-repo.svg){fig-align="center" width=70% style="border: 2px solid #5654A2;"}
+![](figs/qr-surveydown-repo.svg){fig-align="center" width=70% .purple-border}
 :::
 
 ## {.dark-centered .center}
 
-::: {.column width="55%"}
+::: {.column style="width: 59%; text-align: left;"}
 
-### Thanks! {style="font-size: 1.5em;"}
+### Meet the team! {style="font-size: 1.5em; text-align: left; padding-left: calc(20%);"}
 
-![](figs/deadpool-heart.gif){fig-align="center" width=70% style="border: 2px solid #5654A2;"}
+::: {.img-middle}
+[![](figs/member-john-helveston.png){width="25%" .round-image .purple-border}](https://www.jhelvy.com) John Helveston, Ph.D.
+:::
 
-This work was sponsored by the Alfred P. Sloan Foundation.
+::: {.img-middle}
+[![](figs/member-pingfan-hu.jpg){width="25%" .round-image .purple-border}](https://pingfanhu.com) Pingfan Hu
+:::
+
+::: {.img-middle}
+[![](figs/member-bogdan-bunea.jpg){width="25%" .round-image .purple-border}](https://www.linkedin.com/in/bogdanbt/) Bogdan Bunea
+:::
 
 :::
 
-::: {.column width="45%"}
+::: {.column width="2%"}
+:::
+
+::: {.column width="39%"}
 
 ::: {.centered-container style="width: 80%;"}
 [**surveydown.org**](https://surveydown.org)
 :::
 
 <br>
+<br>
 
-![](figs/qr-surveydown-doc.svg){fig-align="center" width=70% style="border: 2px solid #5654A2;"}
+![](figs/qr-surveydown-doc.svg){fig-align="center" width=80% .purple-border}
 
-::: {style="text-align: right;"}
-[`jhelvy.com`](https://www.jhelvy.com)
-
-<a href="https://pingfanhu.com" target="_blank">`pingfanhu.com`</a>
-:::
 :::

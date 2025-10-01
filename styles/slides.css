@@ -157,3 +157,12 @@ iframe {
   border-radius: 50%;
   object-fit: cover;
 }
+
+.purple-border {
+  border: 2px solid #5654A2;
+}
+
+.img-middle img {
+  vertical-align: middle;
+  margin-right: 15px;
+}

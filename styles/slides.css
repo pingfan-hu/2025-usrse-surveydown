@@ -16,6 +16,19 @@ th {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.centered-container-dark {
+  text-align: center;
+  margin-top: 0.5em;
+  color: #2C3E50;
+  border: 2px solid #3DA18A;
+  padding: 10px;
+  width: 300px;
+  margin: 0 auto;
+  border-radius: 8px;
+  background-color: rgba(248, 247, 240, 0.15);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
 .grid-container {
   display: grid;
   gap: 10px;

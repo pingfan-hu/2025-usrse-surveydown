@@ -1,3 +1,27 @@
+/* Fonts */
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/maple-mono@5.2.5/index.min.css');
+
+@font-face {
+  font-family: 'TsangerJinKai';
+  src: url('https://raw.githubusercontent.com/pingfan-hu/resources/main/fonts/TsangerJinKai02-W04.ttf') format('truetype');
+}
+
+.reveal,
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  font-family: 'TsangerJinKai', sans-serif;
+}
+
+.reveal code,
+.reveal pre,
+.reveal pre code {
+  font-family: 'Maple Mono', monospace;
+}
+
 /* Table */
 th {
   font-size: 24px;

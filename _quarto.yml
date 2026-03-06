@@ -12,7 +12,7 @@ format:
     theme: styles/theme.scss
     css: styles/slides.css
     slide-number: true
-    embed-resources: true
+    embed-resources: false
     auto-stretch: false
     footer: "<a href='http://pingfanhu.com'>Pingfan Hu</a> - <a href='https://us-rse.org/usrse25/'>USRSE'25</a>"
     preview-links: auto

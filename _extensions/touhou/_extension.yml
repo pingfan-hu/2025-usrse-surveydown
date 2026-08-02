@@ -25,3 +25,4 @@ contributes:
       include-after-body:
         - control-buttons.html
         - print-footer.html
+        - orientation.html

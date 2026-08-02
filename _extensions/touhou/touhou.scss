@@ -67,6 +67,61 @@ iframe { margin-bottom: 0.5em; }
 th { font-size: 24px; }
 .quarto-figure { margin-bottom: 0; }
 
+// === Orientation: the deck always uses the screen's longer side ===
+// The reveal stage is 1050x700, i.e. landscape. On a portrait viewport (a phone
+// held upright, a narrow desktop window) Reveal would scale that stage down to
+// the narrow width and leave most of the screen empty. Rotate the whole document
+// 90deg clockwise instead, sized to the SWAPPED viewport, so the slide always
+// fills the long dimension whatever the device is doing.
+//
+// Why <body> and not .reveal: Reveal derives its scale from the .reveal
+// element's offsetWidth/offsetHeight, which are PRE-transform layout values.
+// Sizing body to the swapped viewport makes .reveal (width/height: 100%) report
+// landscape dimensions, so Reveal lays out for a landscape viewport by itself,
+// no JS override needed. Rotating .reveal directly would leave Reveal measuring
+// the portrait box and scaling the stage to the narrow side, which is the bug
+// this replaces.
+//
+// `screen` keeps this away from print/PDF export, which must stay upright. `svh`
+// is the toolbar-visible viewport height on iOS; the deck never scrolls, so it
+// is the stable measure (100vh would push the far edge behind Safari's bottom
+// toolbar). `vh` stays as the fallback for browsers without small-viewport
+// units; on desktop the two are equal.
+// The selector must reach CLASS specificity: Reveal puts .reveal-viewport on
+// <body>, and reveal.css sets `.reveal-viewport { height: 100%; position:
+// relative }`. A bare `body` rule loses to that, so height and position would
+// silently keep reveal's values (width applied, height did not) and the rotated
+// deck came out square. Listing both selectors keeps the bare-body fallback for
+// any build where the class is absent.
+// Reveal's zoom plugin sets `body.style.transition = "transform 0.8s ease"`
+// INLINE at init so it can animate alt-click zoom. The rotation below is also a
+// transform on body, so it inherits that easing and the flip visibly swings.
+// Turning the device should be instant, so the transition is killed here rather
+// than inside the media query: a rule scoped to portrait only covers the flip
+// INTO portrait, and the moment the query stops matching the easing is back for
+// the flip OUT of it. This rule holds in both orientations, so both directions
+// are instant. !important is required to beat the plugin's inline style. The
+// cost is that alt-click zoom becomes instant too, which is invisible in normal
+// use.
+body,
+body.reveal-viewport {
+  transition: none !important;
+}
+
+@media screen and (orientation: portrait) {
+  body,
+  body.reveal-viewport {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vh;
+    width: 100svh;
+    height: 100vw;
+    transform-origin: top left;
+    transform: translateX(100vw) rotate(90deg);
+  }
+}
+
 // === Reveal.js ===
 .reveal {
   font-family: 'TsangerJinKai', sans-serif;

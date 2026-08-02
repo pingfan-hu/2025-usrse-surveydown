@@ -1,0 +1,23 @@
+<script>
+// ---- Orientation relayout ----
+// touhou.scss rotates <body> 90deg on a portrait viewport so the landscape stage
+// uses the screen's long side (see "=== Orientation ===" there). Reveal reads its
+// scale from .reveal's pre-transform box, so the rotation alone is usually
+// enough. What is not reliable is the TIMING on a real device: turning a phone
+// fires resize while the media query, the visual viewport, and the URL bar are
+// all still settling, so Reveal can measure a stale box and leave the deck
+// mis-scaled until the next interaction. Re-run layout after the flip, plus once
+// on the following frame and once more after the toolbar animation.
+(function () {
+  var relayout = function () {
+    if (!window.Reveal || !Reveal.layout) return;
+    Reveal.layout();
+    requestAnimationFrame(function () { Reveal.layout(); });
+    setTimeout(function () { Reveal.layout(); }, 300);
+  };
+  var mq = window.matchMedia('(orientation: portrait)');
+  if (mq.addEventListener) mq.addEventListener('change', relayout);
+  else if (mq.addListener) mq.addListener(relayout); // Safari < 14
+  window.addEventListener('orientationchange', relayout);
+})();
+</script>

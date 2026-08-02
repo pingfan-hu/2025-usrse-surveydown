@@ -171,15 +171,27 @@ the overview grid) and parks it on the .slides scroll container. -->
   // the arrow toggles it either way, including closing while still hovered
   // (which is why hover lives here and not in a CSS :hover rule; CSS would
   // force the tray open under the cursor and eat the click-to-close).
+  // Hover is wired through pointer events FILTERED to real mice: a touch tap
+  // emulates mouseenter right before click, so with plain mouseenter the tap
+  // opened the tray (fake hover) and the click instantly toggled it back
+  // shut — mobile needed two taps. With pointerType, touch skips the hover
+  // path entirely and one tap = one clean toggle.
   arrow.addEventListener('click', function () {
     flyout.classList.toggle('is-open');
     arrow.blur();
   });
-  flyout.addEventListener('mouseenter', function () {
-    flyout.classList.add('is-open');
+  flyout.addEventListener('pointerenter', function (e) {
+    if (e.pointerType === 'mouse') flyout.classList.add('is-open');
   });
-  flyout.addEventListener('mouseleave', function () {
-    flyout.classList.remove('is-open');
+  flyout.addEventListener('pointerleave', function (e) {
+    if (e.pointerType === 'mouse') flyout.classList.remove('is-open');
+  });
+  // Touch never runs the leave path above, so mirror mouse leave-to-close:
+  // a tap landing anywhere outside the flyout closes the tray.
+  document.addEventListener('pointerdown', function (e) {
+    if (e.pointerType !== 'mouse' && !flyout.contains(e.target)) {
+      flyout.classList.remove('is-open');
+    }
   });
 
   flyout.appendChild(tray);

@@ -1,0 +1,25 @@
+<!-- Per-page footer text for the PDF export view (the "E" shortcut / ?print-pdf).
+
+The export view stamps the footer onto every .pdf-page box as a CSS ::after
+pseudo-element (see the "PDF export footer" block in slides.scss, which holds
+all the styling). CSS alone cannot read the footer's text, so this script
+supplies it: it reads the deck's own rendered footer (whatever `footer:` in
+the deck YAML produced, flattened to plain text) and injects a one-line style
+rule with that text as the ::after content.
+
+Deliberately NOT event- or timing-based: the footer markup precedes this
+script in the document, so the read is synchronous at parse time, and the
+injected CSS applies declaratively whenever Reveal later builds the .pdf-page
+boxes. There is nothing to wait for and nothing to race. -->
+<script>
+(function () {
+  var f = document.querySelector('.reveal > .footer');
+  var text = f ? f.textContent.replace(/\s+/g, ' ').trim() : '';
+  if (!text) return;
+  var style = document.createElement('style');
+  style.textContent =
+    'html.reveal-print .reveal .pdf-page::after{content:' +
+    JSON.stringify(text) + ';}';
+  document.head.appendChild(style);
+})();
+</script>

@@ -1,0 +1,11 @@
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+window.addEventListener('load', function() {
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+});
+if (window.Reveal) {
+  Reveal.on('slidechanged', function() {
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  });
+}
+</script>

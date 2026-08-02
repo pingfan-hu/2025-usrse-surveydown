@@ -155,7 +155,7 @@ What's next?
 
 ![](figs/quarto-process.png){fig-align="center" width=100% .purple-border}
 
-## {style="font-size: 0.7em;"}
+## {style="font-size: 0.7em;" .light-centered .center}
 
 ::: {.column width="48%"}
 
@@ -188,7 +188,7 @@ quarto_r_html()
 
 :::
 
-## {style="font-size: 0.7em;"}
+## {style="font-size: 0.7em;" .light-centered .center}
 
 ::: {.column width="48%"}
 
@@ -226,7 +226,7 @@ quarto_python_pdf()
 ![](figs/what-is-surveydown.png){width=100%}
 
 
-## {style="font-size: 0.7em;"}
+## {style="font-size: 0.7em;" .light-centered .center}
 
 ::: {.column width="48%"}
 
@@ -252,7 +252,7 @@ surveycode()
 
 :::
 
-## {style="font-size: 0.7em;"}
+## {style="font-size: 0.7em;" .light-centered .center}
 
 ::: {.column width="48%"}
 
@@ -276,7 +276,7 @@ YAML header for a "clean" output
 
 :::
 
-## {style="font-size: 0.7em;"}
+## {style="font-size: 0.7em;" .light-centered .center}
 
 ::: {.column width="48%"}
 
@@ -300,7 +300,7 @@ Load the `surveydown` Package
 
 :::
 
-## {style="font-size: 0.7em;"}
+## {style="font-size: 0.7em;" .light-centered .center}
 
 ::: {.column width="48%"}
 
@@ -326,7 +326,7 @@ to define survey pages
 
 :::
 
-## {style="font-size: 0.7em;"}
+## {style="font-size: 0.7em;" .light-centered .center}
 
 ::: {.column width="48%"}
 
@@ -354,7 +354,7 @@ Page content
 
 :::
 
-## {style="font-size: 0.7em;"}
+## {style="font-size: 0.7em;" .light-centered .center}
 
 ::: {.column width="48%"}
 
@@ -380,7 +380,7 @@ surveycode()
 
 :::
 
-## {style="font-size: 0.7em;"}
+## {style="font-size: 0.7em;" .light-centered .center}
 
 ::: {.column width="48%"}
 
@@ -461,7 +461,7 @@ An **R script** defining the survey Shiny app.
 
 ![](figs/spiderman-oh-no.gif){width=80% .purple-border}
 
-## {style="font-size: 0.9em;"}
+## {style="font-size: 0.9em;" .light-centered .center}
 
 ::: {.column width="60%"}
 
@@ -476,7 +476,7 @@ appcode_short()
 
 :::
 
-## {style="font-size: 1em;"}
+## {style="font-size: 1em;" .light-centered .center}
 
 ::: {.column style="width: 60%; font-size: 0.9em;"}
 
@@ -532,7 +532,7 @@ Run the `surveydown` server
 ![](figs/supabase-table.png){width=100%}
 
 
-##
+## {.light-centered .center}
 
 ::: {.column style="width: 58%; font-size: 0.9em;"}
 
@@ -697,13 +697,13 @@ Conditional stopping
 :::
 :::
 
-## Conditional showing - `sd_show_if()` {.light-centered}
+## Conditional showing - `sd_show_if()` {.light-centered .center}
 
 <br>
 
 ![](figs/conditional-showing.gif){width=50% .purple-border}
 
-## Conditional showing - `sd_show_if()` {.light-centered}
+## Conditional showing - `sd_show_if()` {.light-centered .center}
 
 <br>
 
@@ -775,15 +775,15 @@ Condition ~ Target
 `sdstudio::launch()`
 :::
 
-##
+## {.light-centered .center}
 
 ![](figs/sdstudio-build.gif){fig-align="center" width=100% .purple-border}
 
-##
+## {.light-centered .center}
 
 ![](figs/sdstudio-preview.gif){fig-align="center" width=100% .purple-border}
 
-##
+## {.light-centered .center}
 
 ![](figs/sdstudio-data.gif){fig-align="center" width=100% .purple-border}
 

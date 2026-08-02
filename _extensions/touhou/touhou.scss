@@ -1,0 +1,1459 @@
+/*-- scss:defaults --*/
+
+// === Typography ===
+$font-family-sans-serif: "TsangerJinKai", sans-serif !default;
+$font-family-monospace: "Maple Mono", monospace !default;
+$presentation-font-size-root: 36px;
+$presentation-font-smaller: 0.75;
+$presentation-line-height: 1.3;
+
+// === Colors ===
+$body-bg: #F8F7F0 !default;
+$body-color: #564232 !default;
+$link-color: #5654A2 !default;
+$selection-color: inherit !default;
+$selection-bg: #C6D6E8 !default;
+
+// === Headings ===
+$presentation-heading-font: "TsangerJinKai", sans-serif !default;
+$presentation-h1-font-size: 1.6em;
+$presentation-h2-font-size: 1.3em;
+$presentation-h3-font-size: 1.2em;
+$presentation-h4-font-size: 1.1em;
+$presentation-heading-color: #5654A2 !default;
+
+// === Code Blocks ===
+$code-block-bg: #EDEDED !default;
+$code-block-border-color: lighten($body-color, 60%);
+$code-block-font-size: 0.6em;
+
+// === Inline Code ===
+$code-color: #2C8475 !default;
+
+
+/*-- scss:rules --*/
+
+// === SCSS Variables ===
+$purple:          #5654A2;
+$teal:            #2C8475;
+$teal-link:       #3DA18A;
+$teal-link-hover: #236257;
+$amber:           #FFB84D;
+$navy:            #2C3E50;
+$light-bg:        #F8F7F0;
+$bubble-bg:       #DFE4FF;
+$coral:           #D45F47;
+$rose:            #B5476A;
+$sage:            #4A7A5A;
+$slate:           #5A6B80;
+$gold:            #C4881A;
+$blue:            #3A7DC9;
+$terracotta:      #CB6A43;   // gold + red, a warm coral
+
+// === Fonts ===
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/maple-mono@5.2.5/index.min.css');
+
+@font-face {
+  font-family: 'TsangerJinKai';
+  src: url('https://raw.githubusercontent.com/pingfan-hu/resources/main/fonts/TsangerJinKai02-W04.ttf') format('truetype');
+}
+
+// === Global ===
+:root {
+  --r-block-margin: 5px;
+}
+
+iframe { margin-bottom: 0.5em; }
+th { font-size: 24px; }
+.quarto-figure { margin-bottom: 0; }
+
+// === Reveal.js ===
+.reveal {
+  font-family: 'TsangerJinKai', sans-serif;
+  // Let optical-sizing tune the face to its rendered size where the font supports it.
+  font-optical-sizing: auto;
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'TsangerJinKai', sans-serif;
+
+    code { color: $teal; }
+    a code { color: inherit; }
+  }
+
+  // Size-specific tracking & leading (apple-design §15). Large display type
+  // reads too loose, so tracking tightens as size grows; leading is tight on
+  // big headings and stays comfortable on body (via $presentation-line-height:
+  // 1.3). Values are modest because TsangerJinKai is a brush face with generous
+  // default metrics, so heavy negative tracking would collide the strokes.
+  h1 { letter-spacing: -0.015em; line-height: 1.1; }
+  h2 { letter-spacing: -0.01em;  line-height: 1.15; }
+  h3 { letter-spacing: -0.006em; line-height: 1.2; }
+  h4 { letter-spacing: 0;        line-height: 1.25; }
+
+  code, pre, pre code {
+    font-family: 'Maple Mono', monospace;
+  }
+
+  a {
+    color: $teal-link !important;
+    &:hover { color: $teal-link-hover !important; }
+  }
+
+  // Instructor link pills (about slide) — scoped to win over the global `.reveal a` color.
+  // No transform on hover (was causing sibling jitter from GPU layer repaints).
+  .instructor-link {
+    display: inline-block;
+    align-self: flex-start;
+    font-family: 'Maple Mono', monospace;
+    font-size: 0.5em;
+    padding: 0.25em 0.65em;
+    border-radius: 999px;
+    text-decoration: none !important;
+    transition: box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+    cursor: pointer;
+    will-change: transform;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    &:active {
+      transform: scale(0.96);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    &--blue {
+      color: $blue !important;
+      background: #DCE9FA;
+      &:hover { background: #C8DCF4; color: darken($blue, 10%) !important; }
+    }
+
+    &--gold {
+      color: $gold !important;
+      background: #FEF5E7;
+      &:hover { background: #FAE9C8; color: darken($gold, 10%) !important; }
+    }
+  }
+
+  // Whole-card link (practice tool cards). The entire card is the clickable
+  // target — no text underline. Hover brightens the card's amber border + fill
+  // and lifts it with a shadow; the press is a momentary scale on :active.
+  // Hover uses background/border/box-shadow only (no translate) to avoid sibling
+  // jitter; will-change pre-promotes the layer so the :active scale is smooth.
+  .tool-card {
+    display: block;
+    color: inherit !important;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease,
+                box-shadow 0.2s ease, transform 0.1s ease;
+    will-change: transform;
+    backface-visibility: hidden;
+
+    &:hover {
+      background: rgba(255, 184, 77, 0.13) !important;
+      border-color: rgba(255, 184, 77, 0.6) !important;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+    }
+    &:active { transform: scale(0.97); }
+  }
+
+  // Uniform 2em x 2em icon frame for all .tool-link icons. Reveal.js applies
+  // its own `.reveal img` defaults (margin: 15px 0, border, max-width: 95%,
+  // box-shadow, background) that throw off card layout — reset them here so
+  // every tool icon occupies the same footprint regardless of element type.
+  .tool-icon {
+    width: 1.7em;
+    height: 1.7em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    img {
+      margin: 0 !important;
+      border: 0 !important;
+      background: none !important;
+      box-shadow: none !important;
+      max-width: none !important;
+      max-height: none !important;
+    }
+  }
+
+  // Assistants vs Agents (s1-two-terms). Clickable product pills + an
+  // emphasized "agents win" card. Hover uses box-shadow only (no transform)
+  // to avoid sibling jitter; the press transform on :active is momentary.
+  .term-pill {
+    text-decoration: none !important;
+    transition: box-shadow 0.15s ease, transform 0.1s ease;
+    cursor: pointer;
+    will-change: transform;
+
+    &:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14); }
+    &:active { transform: scale(0.97); }
+
+    // Keep each pill's brand color over the global `.reveal a` color !important.
+    &--teal { color: #2C8475 !important; &:hover { color: #2C8475 !important; } }
+    &--gold { color: #C4881A !important; &:hover { color: #C4881A !important; } }
+  }
+
+  // Brand pill: inline logo-plus-wordmark hyperlink, sized to sit inside a
+  // slide title ("Use [GitHub]"). The mark is a CSS mask on ::before, painted
+  // with currentColor, so each brand only needs a modifier with its own
+  // --brand-mark data URI. Hover: shadow/background only (no transform, see
+  // hover-shake note above); press on :active. The small `top` offset lifts
+  // the pill to optically center against the title's cap height.
+  .brand-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    vertical-align: middle;
+    position: relative;
+    top: -0.12em;
+    background: #FFFFFF;
+    border: 1px solid #C5CED8;
+    border-radius: 999px;
+    padding: 0.3em 0.7em;
+    font-size: 0.75em;
+    font-weight: 800;
+    color: #5654A2 !important;
+    box-shadow: 0 4px 14px rgba(44, 62, 80, 0.1);
+    text-decoration: none !important;
+    transition: box-shadow 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+    cursor: pointer;
+    will-change: transform;
+
+    &:hover {
+      background: #F4F6F8;
+      box-shadow: 0 6px 18px rgba(44, 62, 80, 0.16);
+      color: #5654A2 !important;
+      // Quarto's reveal theme sets `.reveal a:hover { border: none }`, which
+      // would drop the 1px border and shrink the pill, reflowing the title.
+      border: 1px solid #C5CED8;
+    }
+    &:active { transform: scale(0.96); }
+
+    &::before {
+      content: "";
+      width: 1.15em;
+      height: 1.15em;
+      background: currentColor;
+      -webkit-mask: var(--brand-mark) no-repeat center / contain;
+      mask: var(--brand-mark) no-repeat center / contain;
+    }
+
+    &--github {
+      // Keep the octocat in GitHub's dark ink while the wordmark is purple.
+      &::before { background: #2C3E50; }
+      --brand-mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z'/%3E%3C/svg%3E");
+    }
+
+    &--waza {
+      // The ninja emoji itself (light skin tone), full color, so no mask: the
+      // ::before becomes a plain text glyph instead of a currentColor mask.
+      &::before {
+        content: "🥷🏻";
+        background: none;
+        -webkit-mask: none;
+        mask: none;
+        width: auto;
+        height: auto;
+        font-size: 1.05em;
+        line-height: 1;
+      }
+    }
+  }
+
+  // Call-to-action pill: gradient-filled button link (e.g. "Download GitHub
+  // Desktop"). All styling lives here, not inline, so the :hover rules are not
+  // shadowed by inline declarations. Borderless, so the theme's
+  // `.reveal a:hover { border: none }` cannot resize it. Hover brightens the
+  // gradient and deepens the shadow (no transform); press on :active.
+  .cta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    background: linear-gradient(135deg, #6B69B8, #5654A2);
+    border-radius: 999px;
+    padding: 0.55em 1.1em;
+    font-size: 0.55em;
+    font-weight: 700;
+    color: #FFFFFF !important;
+    box-shadow: 0 5px 16px rgba(86, 84, 162, 0.35);
+    text-decoration: none !important;
+    transition: box-shadow 0.15s ease, filter 0.15s ease, transform 0.1s ease;
+    cursor: pointer;
+    will-change: transform;
+
+    &:hover {
+      color: #FFFFFF !important;
+      filter: brightness(1.12);
+      box-shadow: 0 8px 22px rgba(86, 84, 162, 0.5);
+    }
+    &:active { transform: scale(0.96); }
+  }
+
+  // Copy-prompt button (s2-first-prompt). Pinned top-right of the prompt card;
+  // copies the prompt text to the clipboard and flips its label to "Copied!".
+  // Hover uses background + box-shadow only (no transform) to avoid card jitter.
+  .copy-prompt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    flex-shrink: 0;
+    font-family: 'Maple Mono', monospace;
+    font-size: 0.42em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #3A7DC9;
+    background: #EAF1FB;
+    border: 1px solid #C8DCF4;
+    border-radius: 999px;
+    padding: 0.45em 0.85em;
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+    will-change: transform;
+
+    &:hover { background: #DCE9FA; box-shadow: 0 3px 10px rgba(58, 125, 201, 0.18); }
+    &:active { transform: scale(0.96); }
+  }
+
+  // Agent card is pre-scaled to read as the focus of the slide. transform-origin
+  // centers the zoom. No hover/active interaction — emphasis is static.
+  .agent-card {
+    position: relative;
+    transform: scale(1.05);
+    transform-origin: center center;
+  }
+
+  // Slightly recede the assistants card so the agents card reads as the winner.
+  .assistant-card { opacity: 0.82; }
+
+  // "Agents win" badge pinned above the agent card.
+  .agent-badge {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+    font-family: 'Maple Mono', monospace;
+    font-size: 0.42em;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #E0A92E, #C4881A);
+    padding: 0.45em 0.95em;
+    border-radius: 999px;
+    box-shadow: 0 5px 16px rgba(196, 136, 26, 0.4);
+    white-space: nowrap;
+  }
+
+  // Teal variant of the focus badge — same form, themed to the project/teal
+  // palette (e.g. the "Project Directories" focus card on the launch-dir slide).
+  .agent-badge--teal {
+    background: linear-gradient(135deg, #3DA890, #2C8475);
+    box-shadow: 0 5px 16px rgba(44, 132, 117, 0.4);
+  }
+
+  // Practice slides carry the .practice class on their "## &nbsp;" header.
+  // The blank placeholder heading still renders as a 66px line above the box,
+  // and Reveal's vertical centering counts it, sinking the box below true
+  // center. Hide it so the box wrapper is the section's only in-flow content
+  // and the centering measures the box alone.
+  section.practice > h2 { display: none; }
+
+  // Practice countdown timer straddling the practice box's top-right corner.
+  // Two parts: .pt-main (play/pause + time) toggles start / pause / resume on
+  // click or Enter/Space; .pt-reset restarts the clock to its initial time.
+  // Counts down in 1s steps. The time display has a FIXED width so the pill
+  // never resizes as the digits change. The timer div lives INSIDE the
+  // position:relative box wrapper (the width:92% div in each practice
+  // partial), so the absolute offsets anchor it to the BOX, not the section:
+  // it keeps the same spot relative to the box in every mode — live view,
+  // overview thumbnails, and the PDF export pages — even though the section's
+  // own height differs across those modes. The negative top lifts the pill
+  // above the box's top edge; the negative right pushes it into the section's
+  // side gutter (the wrapper leaves 4% each side).
+  .practice-timer {
+    position: absolute;
+    top: -44px;
+    right: -12px;
+    z-index: 30;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-family: 'Maple Mono', monospace;
+    font-weight: 700;
+    font-size: 1.05em;
+    line-height: 1;
+    color: #2C3E50;
+    background: #FBE6C9;
+    border: 2px solid #F0CE8E;
+    border-radius: 999px;
+    padding: 0.4em 0.7em;
+    user-select: none;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+    transition: box-shadow 0.15s ease;
+
+    svg { width: 1.05em; height: 1.05em; display: block; margin: 0; }
+
+    .pt-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4em;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+      &:active { transform: scale(0.96); }
+      // Play/pause icon fades like the reset button: solid on hover, faded otherwise.
+      &:hover .pt-ico { opacity: 1; }
+    }
+    // Fixed width keeps the pill from resizing as the countdown text changes
+    // width (e.g. "10:00" -> "9:59" -> "0:30"). Monospace + centered.
+    .pt-time {
+      width: 3em;
+      text-align: center;
+      letter-spacing: 0.04em;
+      font-variant-numeric: tabular-nums;
+    }
+    // will-change + backface-visibility pre-promote the layer so the first hover
+    // opacity transition doesn't repaint-shake the icon.
+    .pt-ico { display: inline-flex; align-items: center; opacity: 0.65; transition: opacity 0.15s ease; will-change: opacity; backface-visibility: hidden; }
+    .pt-ico-pause { display: none; }
+
+    .pt-reset {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 0 0 0.35em;
+      margin: 0;
+      background: transparent;
+      border: none;
+      border-left: 1.5px solid rgba(0, 0, 0, 0.18);
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      // Fade only the icon, never the button — so the divider border stays a
+      // constant solid color and never reacts to hover. will-change pre-promotes
+      // the layer so the first hover transition doesn't repaint-shake.
+      svg {
+        opacity: 0.65;
+        transition: opacity 0.15s ease, transform 0.12s ease;
+        will-change: opacity, transform;
+        backface-visibility: hidden;
+      }
+      &:hover svg { opacity: 1; }
+      &:active svg { transform: rotate(-35deg) scale(0.9); }
+    }
+
+    &:hover { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.26); }
+
+    &.pt-running {
+      .pt-ico-play { display: none; }
+      .pt-ico-pause { display: inline-flex; }
+    }
+    // Last minute: turn the time text red as a heads-up.
+    &.pt-warning .pt-time { color: #C0392B; }
+    // Paused (was running, then paused): fade the time text to the reset icon's
+    // idle opacity. Fresh / reset stays solid — only an active pause fades it.
+    &.pt-paused .pt-time { opacity: 0.65; }
+    &.pt-done {
+      color: #FFFFFF;
+      background: #C0392B;
+      border-color: #C0392B;
+      .pt-reset { border-left-color: rgba(255, 255, 255, 0.4); }
+    }
+  }
+
+  // Countdown scrubber, a draggable bar pinned to the slide's bottom edge.
+  // Always visible: full opacity while running (.pt-visible), gently faded when
+  // paused / idle / done. Spans the full countdown (max = TOTAL). The input uses
+  // step = 1 so the thumb tracks the live 1s countdown smoothly (matching the
+  // --fill amber fill); the timer script snaps *user* drags to 5s. Injected as
+  // the timer's next sibling, so it also lives inside the position:relative
+  // box wrapper: the bottom inset anchors it to the BOX's bottom edge (the
+  // wrapper's bottom IS the box's bottom), landing the bar inside the box's
+  // bottom padding in every mode (live, overview thumbnails, PDF export),
+  // same reasoning as .practice-timer above.
+  .practice-scrub {
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    width: 72%;
+    max-width: 920px;
+    height: 16px;
+    margin: 0;
+    z-index: 30;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.2s ease;
+
+    &.pt-visible { opacity: 1; }
+
+    &::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(to right,
+        #E0A92E 0%, #E0A92E var(--fill, 100%),
+        rgba(248, 247, 240, 0.2) var(--fill, 100%), rgba(248, 247, 240, 0.2) 100%);
+    }
+    &::-moz-range-track {
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(to right,
+        #E0A92E 0%, #E0A92E var(--fill, 100%),
+        rgba(248, 247, 240, 0.2) var(--fill, 100%), rgba(248, 247, 240, 0.2) 100%);
+    }
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      margin-top: -5px;
+      border-radius: 50%;
+      background: #C4881A;
+      border: 2px solid #FBE6C9;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    &::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #C4881A;
+      border: 2px solid #FBE6C9;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .slide-background-content {
+    background-position: 50% 80%;
+  }
+
+  // ---- Website structure tree (s2-website-structure) ----
+  // Two-level file tree on the left; the HTML row matching the page shown in
+  // the embedded browser on the right gets .is-active. The highlight is driven
+  // by wireSiteScroll() in resources/_header.html on each iframe navigation.
+  .struct-row {
+    display: flex;
+    align-items: center;
+    font-family: 'Maple Mono', monospace;
+    font-size: 0.5em;
+    padding: 0.13em 0;
+
+    .struct-connector {
+      color: #C9C0CB;
+      white-space: pre;
+    }
+    i { flex-shrink: 0; }
+
+    // Icon + name pair; the highlight pill hugs only this part.
+    .struct-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45em;
+      padding: 0.13em 0.55em;
+      border-radius: 0.5em;
+    }
+  }
+
+  // Folder rows are non-interactive labels.
+  .struct-folder .struct-name { color: $navy; font-weight: 700; }
+
+  // File rows are clickable (load that page in the preview) and highlight when
+  // their page is the one currently shown in the preview.
+  .struct-file {
+    cursor: pointer;
+
+    .struct-label {
+      transition: background-color 0.2s ease;
+    }
+    .struct-name { color: $coral; }
+
+    &:hover .struct-label { background: #FCEAE5; }
+
+    &.is-active {
+      .struct-label { background: #FDEDE9; }
+      .struct-name { font-weight: 700; }
+    }
+  }
+
+  // Overrides for dark slide headings and code
+  .dark-centered {
+    h1, h2, h3, h4, h5, h6 { color: $light-bg !important; }
+    code { color: $amber !important; }
+  }
+}
+
+// === Title Slide ===
+.custom-title-slide {
+  h1 {
+    position: relative;
+    top: 5vh;
+    font-size: 1.3em !important;
+  }
+
+  .quarto-title-author-name {
+    position: relative;
+    top: 5vh;
+    font-size: 0.9em !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .reveal .slides section.custom-title-slide {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    height: 100% !important;
+  }
+}
+
+// === Slide Variants ===
+.light-centered {
+  text-align: center;
+}
+
+.dark-centered {
+  background-color: $navy !important;
+  color: $light-bg !important;
+  text-align: center;
+}
+
+// Title slide banner. The banner is a CSS background ON the #title-slide section
+// (image set per-deck via `style: "... background-image: url(figs/banner.png)"` in
+// each deck's title-slide-attributes), NOT Reveal's data-background layer. That
+// keeps it INSIDE the scaled .slides stage, so it sizes and positions relative to
+// the slide content and scales with it, exactly like a body slide. Size/position
+// live here (shared, one place to tune). The section stays transparent so the navy
+// `data-background-color` layer shows behind the circular banner.
+#title-slide.dark-centered {
+  background-color: transparent !important;
+}
+
+#title-slide {
+  background-repeat: no-repeat;
+  background-size: 28%;
+  background-position: right 12% center;
+}
+
+.black-centered {
+  background-color: #000 !important;
+  color: $light-bg !important;
+  text-align: center;
+}
+
+// === Layout ===
+.grid-container {
+  display: grid;
+  gap: 10px;
+  height: 50vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.four-by-three-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 15px;
+  height: 30vh;
+  align-items: center;
+  justify-content: center;
+  margin: 1em;
+
+  > * {
+    border: 2px solid $teal;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: $teal;
+    font-weight: bold;
+  }
+}
+
+// === Containers ===
+// No width here on purpose: the theme provides the look (border, colors,
+// shadow), but width belongs to the usage site — decks set it inline
+// (style="width: 500px") or in their own css (e.g. max-width: 90%). A fixed
+// theme width silently overrode every deck-level banner width.
+.centered-container {
+  text-align: center;
+  color: #FF5733;
+  border: 2px solid #333;
+  padding: 10px;
+  margin: 0 auto;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.centered-container-dark {
+  text-align: center;
+  color: $navy;
+  border: 2px solid $teal-link;
+  padding: 10px;
+  margin: 0 auto;
+  border-radius: 8px;
+  background-color: rgba(248, 247, 240, 0.15);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+// === Speech Bubbles ===
+.bubble-left {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: $bubble-bg;
+  border-radius: 5px;
+  position: absolute;
+  margin-left: 20px;
+  width: fit-content;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent $bubble-bg transparent transparent;
+  }
+}
+
+.bubble-top {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: $bubble-bg;
+  border-radius: 5px;
+  position: absolute;
+  left: 55%;
+  transform: translateX(-50%);
+  width: fit-content;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -20px;
+    transform: translateX(-50%);
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent transparent $bubble-bg transparent;
+  }
+}
+
+// === Color Utilities ===
+.teal   { color: $teal !important; }
+.purple { color: $purple !important; }
+.amber  { color: $amber !important; }
+.navy   { color: $navy !important; }
+.coral  { color: $coral !important; }
+.rose   { color: $rose !important; }
+.sage   { color: $sage !important; }
+.slate  { color: $slate !important; }
+.gold   { color: $gold !important; }
+.blue   { color: $blue !important; }
+.terracotta { color: $terracotta !important; }
+
+// === Text Size Utilities ===
+.small  { font-size: 0.7em; }
+
+// === Image Utilities ===
+.round-image {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.purple-border {
+  border: 2px solid $purple;
+}
+
+.img-middle {
+  img {
+    vertical-align: middle;
+    margin-right: 15px;
+  }
+}
+
+// ---- Read-demo source banner (whole banner is a click target) ----
+// onclick (no href) means no Safari status bar, so a hover lift is safe here.
+.read-src-btn {
+  cursor: pointer;
+  will-change: background-color, border-color, box-shadow;
+  backface-visibility: hidden;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    background: #CFE1F7 !important;
+    border-color: #8DB6E4 !important;
+    box-shadow: 0 8px 22px rgba(58, 125, 201, 0.2) !important;
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 3px 10px rgba(58, 125, 201, 0.22) !important;
+  }
+}
+
+// ---- Amber link button, for dark slides (onclick, no href → geometry-inert) ----
+// Scoped as `.reveal a.` so it beats Quarto's `.reveal a { color:#3da18a }`.
+.reveal a.waza-btn-dark {
+  display: inline;
+  cursor: pointer;
+  color: #FFD27F !important;
+  background: rgba(255, 184, 77, 0.14);
+  border-radius: 0.28em;
+  padding: 0.02em 0.3em;
+  margin: 0 0.12em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  text-decoration: none !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 184, 77, 0.4);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 184, 77, 0.24);
+    box-shadow: inset 0 0 0 1px rgba(255, 184, 77, 0.7);
+    color: #FFDF9E !important;
+  }
+
+  &:active { background: rgba(255, 184, 77, 0.32); }
+}
+
+// ---- Inline "surveydown" links (case-subsections slide) ----
+// Teal light-slide twin of `.waza-btn-dark` above: same crisp badge layout
+// (small radius, subtle tint, thin full inset border), retinted for teal on
+// a light surface. Scoped as `.reveal a.` so it beats Quarto's global teal.
+.reveal a.sd-link {
+  display: inline;
+  cursor: pointer;
+  color: #2C8475 !important;
+  background: rgba(44, 132, 117, 0.1);
+  border-radius: 0.28em;
+  // The font reserves more room above the baseline than this lowercase word
+  // uses, so symmetric padding makes the text hug the bottom. line-height:1
+  // removes the inherited leading; the asymmetric vertical padding (small
+  // top, larger bottom) then lifts the text to the optical center WITHOUT
+  // growing the badge past its original size.
+  line-height: 1;
+  padding: 0.06em 0.3em 0.14em;
+  margin: 0 0.12em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  text-decoration: none !important;
+  box-shadow: inset 0 0 0 1px rgba(44, 132, 117, 0.35);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: rgba(44, 132, 117, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(44, 132, 117, 0.6);
+    color: #205F53 !important;
+  }
+
+  &:active { background: rgba(44, 132, 117, 0.26); }
+}
+
+// ---- Deck corner controls (bottom-left group) ----
+// Injected into every deck by ../styles/control-buttons.html (include-after-body
+// in each deck's _quarto.yml), so the group belongs to the slide document
+// itself: it survives fullscreen and shows on standalone deck views too. One
+// fixed wrapper in the bottom-left corner holds, bottom to top: the hamburger
+// menu button (relocated from the reveal-menu plugin, always visible), then
+// an up-arrow handle whose collapsible tray carries a Full Screen button (the
+// "F" key), a Slide Overview button ("O"), and the home button. Collapsed,
+// only the hamburger and the arrow show; hovering the arrow or tray (or
+// focusing a button, or tapping the arrow) expands the tray, and it stays
+// open while the cursor is over the buttons because they live inside the same
+// flyout. Hovering the hamburger expands nothing: it sits in the wrapper (for
+// the shared tile look and the shared hiding) but outside the flyout that
+// triggers expansion. Every button shares the .deck-ctrl ghost-tile look; the
+// injector script toggles .is-hidden on the wrapper while overview mode is
+// active, and the export view hides it below, so the controls exist only on
+// the normal slide layout.
+.deck-controls {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: 42px;
+
+  &.is-hidden { display: none; }
+}
+
+// The arrow plus its tray: the hover/focus surface that expands the stack.
+// The hamburger sits outside it, so it never triggers the flyout.
+.deck-controls-flyout {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+// The tray collapses via the grid 0fr -> 1fr trick so the hidden buttons take
+// no space (and no hover area) at all; the inner stack clips inside the row.
+.deck-controls-tray {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 200ms ease;
+}
+
+.deck-controls-stack {
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  // The gap between the tray and the arrow lives INSIDE the stack, and only
+  // in the open state: the 0fr row clamps content but not padding, so a
+  // constant padding would leave a phantom 8px hover strip above the arrow
+  // while collapsed. Transitioning it keeps the collapsed wrapper exactly
+  // the arrow tile, nothing more.
+  padding-bottom: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 160ms ease, transform 200ms ease, padding-bottom 200ms ease;
+}
+
+// Open state. No :hover selector here on purpose: hovering is wired in JS
+// (mouseenter/mouseleave toggling .is-open), so a click on the arrow can
+// genuinely close the tray while the cursor is still over it. A CSS :hover
+// rule would force it open again and make the click toggle a no-op.
+// :focus-within keeps the tray open for keyboard users tabbing the buttons.
+.deck-controls-flyout:focus-within,
+.deck-controls-flyout.is-open {
+  .deck-controls-tray { grid-template-rows: 1fr; }
+  .deck-controls-stack { opacity: 1; transform: none; padding-bottom: 8px; }
+  .deck-controls-arrow svg { transform: rotate(180deg); }
+}
+
+// Shared ghost tile for every control in the group. The corner sits on the
+// cream viewport background on body slides and on navy only for the title
+// slide (its data-background-color fills the viewport), so the tile is a
+// quiet frosted surface (faint navy tint, hairline border) with a
+// .has-dark-background flip to light glass below. Per the repo's hover rule
+// there is no hover translate (avoids the retina layer-promotion shake);
+// hover changes surface/shadow/color only, and the press lives on :active.
+.deck-ctrl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  // The adopted plugin button computes content-box (44px with the border);
+  // pin the model so every tile in the column is exactly 42px.
+  box-sizing: border-box;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+
+  border: 1px solid rgba(44, 62, 80, 0.15);
+  border-radius: 10px;
+  background: rgba(44, 62, 80, 0.07);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: #013D5B;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(1, 61, 91, 0.08);
+
+  // Pre-promote so the :active scale does not spin up its compositor layer on
+  // the fly (same shake-avoidance reason as the hover rule above).
+  will-change: transform;
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    color 150ms ease,
+    transform 100ms ease;
+
+  svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+    transition: transform 200ms ease;
+  }
+
+  // Invert on hover: static is a light surface + navy stroke, hover flips to
+  // the deck's purple fill + white stroke. Purple harmonizes with both the
+  // light (cream) and dark (navy) slides while staying distinct from the navy
+  // title slide. Border matches the fill so the swatch reads as one tile.
+  &:hover {
+    background: $purple;
+    border-color: $purple;
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(1, 61, 91, 0.30);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $purple;
+    outline-offset: 2px;
+  }
+
+  // Momentary press; a transform on :active is fine (no sibling shake).
+  &:active {
+    transform: scale(0.92);
+    box-shadow: 0 1px 4px rgba(1, 61, 91, 0.22);
+  }
+}
+
+// Dark-viewport variant. Reveal bubbles has-dark-background onto the .reveal
+// element for slides that declare a dark data-background-color (here: the
+// navy title slide, whose background layer fills the whole viewport). The
+// wrapper is appended to <body> as a later sibling of .reveal, hence the ~
+// combinator. Faint light glass plus a light glyph keeps it just as quiet on
+// navy as the default tile is on cream. The hover flip to purple is restated
+// because this selector outranks the base :hover rule.
+.reveal.has-dark-background ~ .deck-controls .deck-ctrl {
+  border-color: rgba(248, 247, 240, 0.22);
+  background: rgba(248, 247, 240, 0.12);
+  color: #F8F7F0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.20);
+
+  &:hover {
+    background: $purple;
+    border-color: $purple;
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.30);
+  }
+}
+
+// Hide the whole group on the PDF export view (the "E" shortcut reloads with
+// ?print-pdf, which puts reveal-print on the html element): live controls,
+// meaningless on paper, and position:fixed would stamp them over the first
+// page.
+html.reveal-print .deck-controls {
+  display: none !important;
+}
+
+// ---- PDF export footer: one per page ----
+// The export view ("E" / ?print-pdf) lays slides out as block-flow .pdf-page
+// boxes, but Quarto's footer stays a single position:fixed overlay: it floats
+// over the scrolled viewport, belongs to no page, and lands on at most one
+// page of the printed PDF. On paper the footer is just text, so every page
+// stamps its own copy as a ::after pseudo-element on the .pdf-page box
+// (position:relative, so the text anchors to that page's bottom edge). The
+// text itself is per-deck: print-footer.html reads the deck's rendered
+// footer (whatever `footer:` in the YAML produced, links flattened to plain
+// text) and injects the matching `content:` rule, so this block carries only
+// the styling. No content rule ever fires without that text, so a missing
+// footer degrades to a blank band, never a broken box. Font, size, and color
+// match the live footer's computed style (tan #AE8D73, links excepted).
+html.reveal-print .reveal > .footer {
+  display: none;
+}
+
+html.reveal-print .pdf-page::after {
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-family: 'TsangerJinKai', sans-serif;
+  font-size: 18px;
+  color: #AE8D73;
+  z-index: 2;
+}
+
+// ---- Jump-to-slide input: frosted pill in the top-left corner ----
+// Reveal's jump-to-slide box (the "G" shortcut) ships as a bare transparent
+// input at top:15px/left:15px. Restyle it as a pill in the deck's design
+// language: same frosted surface, border, and shadow as .deck-ctrl,
+// TsangerJinKai type, and a purple focus accent. The corner itself is free
+// (the home button moved into the bottom-left .deck-controls group).
+.reveal .jump-to-slide {
+  left: 12px;
+  top: 12px;
+  font-size: 20px;
+}
+
+.reveal .jump-to-slide-input {
+  font-family: 'TsangerJinKai', sans-serif;
+  font-size: 20px;
+  line-height: 1;
+  box-sizing: border-box;
+  height: 42px;
+  // Snug fit around the "Jump to slide" placeholder plus the side padding.
+  width: 7.5em;
+  padding: 0 14px;
+  text-align: left;
+
+  // !important: reveal's .has-dark-background rule otherwise flips the text
+  // to white on dark slides; the dark-viewport variant below re-flips it with
+  // its own !important so the color is always explicit.
+  color: #2C3E50 !important;
+  caret-color: $purple;
+  background: rgba(44, 62, 80, 0.07);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(44, 62, 80, 0.15);
+  // Same corner radius as .deck-ctrl so it reads as part of the same family.
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(1, 61, 91, 0.08);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+
+  &::placeholder {
+    color: rgba(44, 62, 80, 0.45);
+    opacity: 1;
+  }
+
+  // While empty (placeholder showing), hide the caret so it never overlaps
+  // the centered hint text; it reappears with the first typed digit.
+  &:placeholder-shown {
+    caret-color: transparent;
+  }
+
+  // The injector flips the input to type=number (kills contact autofill);
+  // hide the spinner arrows that come with that type.
+  -moz-appearance: textfield;
+  appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: rgba(86, 84, 162, 0.55);
+    box-shadow: 0 4px 14px rgba(1, 61, 91, 0.22), 0 0 0 3px rgba(86, 84, 162, 0.16);
+  }
+}
+
+// Dark-viewport variant of the pill, matching the buttons: faint light glass
+// with light text on the navy title slide.
+.reveal.has-dark-background .jump-to-slide-input {
+  color: #F8F7F0 !important;
+  background: rgba(248, 247, 240, 0.12);
+  border-color: rgba(248, 247, 240, 0.22);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.20);
+
+  &::placeholder {
+    color: rgba(248, 247, 240, 0.55);
+  }
+
+  // Restated: this selector ties the base :focus rule on specificity and
+  // would otherwise drop the purple accent while focused.
+  &:focus {
+    border-color: rgba(86, 84, 162, 0.75);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), 0 0 0 3px rgba(86, 84, 162, 0.28);
+  }
+}
+
+// ---- Slide-menu (hamburger) button inside the controls group ----
+// Quarto's reveal-menu plugin ships its open button as a bare purple hamburger
+// pinned to the bottom-left corner inside .reveal. The controls injector
+// (control-buttons.html) moves the node into .deck-controls and tags it with
+// .deck-ctrl, so the ghost-tile look comes from the shared class and every
+// plugin positioning rule (all scoped under `.reveal`) stops matching. What
+// remains here: neutralize the fixed positioning as a fallback for the brief
+// window before the move, and rebuild the glyph. The stock icon is a data-URI
+// background image with its purple fill baked in, so it cannot recolor on
+// hover; it is replaced by a mask over currentColor so the glyph follows the
+// button color (navy at rest, white on the purple hover fill). The `html`
+// prefix outranks the plugin CSS, which loads after the compiled theme.
+html .deck-controls .slide-menu-button {
+  position: static;
+  left: auto;
+  bottom: auto;
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    // !important: the deck's global link color (`.reveal a`, with !important)
+    // otherwise paints the glyph teal. inherit follows the button color, so
+    // the hover flip to white keeps working.
+    color: inherit !important;
+  }
+
+  // Flex-center the glyph: the plugin renders it as an inline-block ::before
+  // sitting on the <i>'s text baseline, which lands it a hair off-center in
+  // the tile. Making the <i> a flex box and the ::before a block removes the
+  // baseline from the equation entirely.
+  .fa-bars {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .fa-bars::before {
+    // The plugin's own ::before rules (which carried the content) are all
+    // scoped under .reveal and stop matching after the move, so the
+    // pseudo-element is declared from scratch here.
+    content: "";
+    display: block;
+    width: 22px;
+    height: 22px;
+    vertical-align: 0;
+    background: currentColor;
+    -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/></svg>');
+    mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/></svg>');
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: 22px 22px;
+    mask-size: 22px 22px;
+  }
+}
+
+// Before the injector relocates it (and on any page where the injector never
+// runs), keep the stock button invisible so the bare purple hamburger never
+// flashes in the corner.
+html .reveal .slide-menu-button {
+  visibility: hidden;
+}
+
+// Hide it on the PDF export view like the rest of the group: a live control
+// stamped over the first printed page. The plugin's own hide rules key on
+// print-pdf classes this reveal version does not set. Kept selector-wide (not
+// scoped to .deck-controls) so it applies whether or not the move happened.
+html.reveal-print .slide-menu-button {
+  display: none !important;
+}
+
+// The overview injector (control-buttons.html) focuses .slides so scrolling
+// targets the grid. WebKit draws a focus ring even for programmatic focus,
+// and the ring must ALSO stay suppressed after exiting overview onto a slide
+// (the container can briefly keep focus), so this is global, not
+// overview-scoped.
+.reveal .slides:focus,
+.reveal .slides:focus-visible {
+  outline: none !important;
+}
+
+// ---- Overview mode (the "O" shortcut): scrollable grid instead of a strip ----
+// Reveal lays overview slides in one long horizontal strip via inline
+// translate3d transforms on each section plus a pan/scale transform on the
+// .slides container. These rules neutralize all of that (!important beats the
+// inline styles) and rebuild the layout as a scrollable thumbnail grid:
+// - .slides becomes the scroll container, a centered auto-fill grid.
+// - Each section keeps its design size (1050x700, so content renders exactly
+//   like the live slide) and is shrunk to thumbnail size with
+//   `transform: scale()` plus NEGATIVE right/bottom margins that shrink the
+//   layout box to the scaled footprint. The margins matter: transforms do not
+//   affect layout, so without them the untransformed 1050x700 boxes inflate
+//   the scrollable area (a huge dead zone after the last row). `zoom` was
+//   tried instead and rejected: WebKit and Blink disagree on how it interacts
+//   with grid sizing (Orion/Safari rendered oversized, cropped thumbnails).
+// - Reveal's own click handling still works: it reads data-index-h off the
+//   clicked section, so clicking any thumbnail jumps to that slide. Arrow keys
+//   still move the .present highlight and Esc/Enter exit as usual.
+$overview-scale: 0.24;
+
+// Thumbnail card dimensions. The reveal stage is 1050x700 (3:2), but decks are
+// presented on 16:9 screens where the stage sits letterboxed in the middle of
+// the viewport — so the thumbnail card is 16:9 (700 * 16/9 ≈ 1244) with the
+// 1050 stage centered via horizontal padding. A thumbnail then looks exactly
+// like the live slide does on screen, cream side margins included.
+$ov-card-w: 1244px;
+$ov-card-h: 700px;
+$ov-pad-x: 97px; // ($ov-card-w - 1050px stage width) / 2
+
+.reveal.overview {
+  // The 3D perspective is pointless once the strip transforms are gone.
+  perspective: none;
+
+  .slides {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    transform: none !important;
+    zoom: 1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, calc(#{$ov-card-w} * #{$overview-scale}));
+    grid-auto-rows: calc(#{$ov-card-h} * #{$overview-scale});
+    // Tall row gap hosts the slide-number labels. Each number hangs just below
+    // its own thumbnail (see the ::after below), so most of this gap reads as
+    // space ABOVE the next row, visually binding each number to its slide.
+    gap: 60px 28px;
+    justify-content: center;
+    align-content: start;
+    box-sizing: border-box;
+    // Bottom padding leaves room for the last row's slide numbers (the fixed
+    // footer is hidden while overview is open, see the chrome rules below).
+    padding: 30px 30px 45px;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    // Reveal gives .slides pointer-events:none (only sections opt back in), so
+    // wheel events over the grid's empty space fell through to nothing and
+    // scrolling died once no thumbnail sat under the cursor (e.g. at the very
+    // bottom). The scroll container must accept pointer events everywhere.
+    pointer-events: auto !important;
+    // No overscroll-behavior here: WebKit suppresses the native rubber-band
+    // on a scroller carrying `contain`, killing the bounce when a gesture
+    // starts at an edge. Native elastic overscroll needs the default.
+    // Number the thumbnails in deck order (matches reveal's 1-based slide numbers).
+    counter-reset: ov-slide;
+  }
+
+  .slides > section {
+    // Grid items must be in normal flow; reveal's default is position:absolute.
+    position: relative !important;
+    // Beats the inline display:none reveal puts on slides beyond its lazy-load
+    // view distance, so every slide shows in the grid.
+    display: block !important;
+    // 16:9 card, with the 1050px stage centered by the side padding (border-box
+    // keeps the content box at exactly 1050px, so content lays out identically
+    // to the live slide).
+    width: $ov-card-w !important;
+    height: $ov-card-h !important;
+    padding: 0 $ov-pad-x !important;
+    box-sizing: border-box !important;
+    // Replaces reveal's inline translate3d strip placement with a plain scale;
+    // the negative margins collapse the layout box from 1244x700 down to the
+    // scaled 299x168 footprint so the grid and scroll height see thumbnails,
+    // not full-size slides.
+    transform: scale($overview-scale) !important;
+    transform-origin: top left !important;
+    margin: 0 calc(-#{$ov-card-w} * (1 - #{$overview-scale})) calc(-#{$ov-card-h} * (1 - #{$overview-scale})) 0 !important;
+    // Reveal clips overview sections (overflow:hidden); un-clip so the slide
+    // number can hang below the box. Safe here: slides are authored within the
+    // 1050x700 stage (normal presentation mode never clips them either).
+    overflow: visible !important;
+    // Light slides have no background of their own (the cream comes from the
+    // viewport); give thumbnails an explicit one so they read as cards. The
+    // .dark-centered navy fill still wins via its own !important.
+    background-color: $light-bg;
+    border-radius: 6px;
+    outline: 10px solid rgba(44, 62, 80, 0.15);
+    outline-offset: 6px;
+    counter-increment: ov-slide;
+    // A thumbnail is one big click target, nothing more: kill interaction with
+    // the slide's own content. Without this, embedded iframes swallow the
+    // click before reveal's overview handler sees it (so clicking one never
+    // navigates), links stay clickable, and text can be drag-selected.
+    user-select: none !important;
+    -webkit-user-select: none !important;
+
+    * {
+      pointer-events: none !important;
+    }
+
+    // Transparent overlay ABOVE all slide content. pointer-events:none alone
+    // is not enough: WebKit does not reliably honor it on iframes (iframe
+    // scrolling is composited in a separate process), so wheel over an
+    // embedded iframe kept scrolling the iframe's page. A real overlay
+    // occludes the iframe in the hit test, which WebKit does respect, so
+    // every click and wheel lands on the section itself. display must
+    // out-!important reveal's blanket `section:before{display:none}`; same
+    // specificity, and this theme loads after reveal.css, so this wins.
+    &::before {
+      content: '';
+      display: block !important;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: $ov-card-w;
+      height: $ov-card-h;
+      z-index: 99;
+    }
+
+    // Outline widths render scaled by $overview-scale, hence the large values.
+    &:hover { outline: 14px solid rgba(255, 184, 77, 0.9); }
+    &.present { outline: 14px solid rgba(86, 84, 162, 0.9); }
+
+    // Slide number BELOW the thumbnail, hanging into the row gap. Lives in the
+    // section's scaled coordinate space, so the px values are design-size and
+    // shrink by $overview-scale: top 742px renders 10px under the slide's
+    // bottom edge (700px), and the 60px row gap leaves ~36px between the
+    // number and the next row, so the number reads as belonging to its slide.
+    // display must out-!important reveal's blanket `section:after{display:none}`;
+    // same specificity, and this theme loads after reveal.css, so this wins.
+    &::after {
+      content: counter(ov-slide);
+      display: block !important;
+      position: absolute;
+      top: 742px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-family: 'Maple Mono', monospace;
+      font-size: 58px;
+      font-weight: 700;
+      line-height: 1;
+      color: rgba(44, 62, 80, 0.6);
+    }
+  }
+
+  // Centered slides (the title slide has Reveal's .center class) are normally
+  // pushed down by an inline top offset that reveal's overview CSS zeroes out,
+  // so their thumbnails rendered top-flattened instead of matching the live
+  // slide. Center with block-level align-content, NOT flex: a flex-column
+  // container turns inline-block children (e.g. two bare `.column` divs meant
+  // to sit side by side) into stacked flex items, reflowing the thumbnail away
+  // from the live layout.
+  .slides > section.center {
+    align-content: center;
+  }
+
+  // Thumbnails always show the slide's FINAL state: force every fragment
+  // (incremental reveal) to its fully-revealed appearance, as the slide looks
+  // once all increments have played. Without this, fragment-only slides render
+  // as an empty card with just the header.
+  .fragment {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+
+  // Overview shows the slide grid and NOTHING else: hide all deck chrome (the
+  // footer, slide number, progress bar, nav controls, and the jump-to-slide
+  // input). The bottom-left .deck-controls group (which now also contains the
+  // hamburger) is hidden separately by its injector script, since it lives
+  // outside .reveal. All of these live inside .reveal, so scoping on
+  // .reveal.overview restores them automatically on exit.
+  .footer,
+  .slide-number,
+  .progress,
+  .controls,
+  .jump-to-slide {
+    display: none !important;
+  }
+
+  // The backgrounds layer still carries the old strip transforms; hide it. The
+  // only slide that relies on it is a dark title slide (transparent section
+  // over a navy data-background-color), so give that section a navy fill of
+  // its own while in overview — scoped to .dark-centered so decks with a light
+  // title slide keep it light in the grid too. Higher specificity than the
+  // transparent override above.
+  .backgrounds { display: none !important; }
+  #title-slide.dark-centered { background-color: $navy !important; }
+}
+
+// ---- Footer + slide number: scale with reveal's stage ----
+// Reveal scales the .slides stage (1050x700) by S = min(availW/1050, availH/700)
+// to fit the viewport, but the footer and slide number are position:fixed to the
+// .reveal container OUTSIDE that scaled stage, so they keep a fixed px size. On a
+// short (height-limited) viewport the stage nearly fills the height while these
+// stay large, so they overlap the shrunken content. Reproduce reveal's own scale
+// with min(designPx, designPx*vw/10.5, designPx*vh/7): capped at the design size
+// (normal and large viewports unchanged) and shrinking in lockstep with the
+// content below that. `div.reveal` outranks the quarto footer plugin's
+// `.reveal .footer` so this wins regardless of stylesheet order.
+div.reveal .footer {
+  font-size: min(18px, 1.714vw, 2.571vh);
+  bottom: min(18px, 1.714vw, 2.571vh);
+}
+
+div.reveal .slide-number {
+  font-size: min(16px, 1.524vw, 2.286vh);
+  bottom: min(10px, 0.952vw, 1.429vh);
+  right: min(10px, 0.952vw, 1.429vh);
+}

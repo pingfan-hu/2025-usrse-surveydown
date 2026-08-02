@@ -1,0 +1,27 @@
+title: Touhou Revealjs
+author: Pingfan Hu
+version: 1.0.0
+quarto-required: ">=1.6"
+contributes:
+  formats:
+    revealjs:
+      smaller: false
+      theme: touhou.scss
+      slide-number: true
+      embed-resources: false
+      auto-stretch: false
+      preview-links: false
+      link-external-newwindow: true
+      link-external-icon: false
+      center-title-slide: true
+      code-block-height: 650px
+      # No title-slide-attributes here on purpose: the format must not force a
+      # title-slide look. Each deck sets its own (background color/image, class)
+      # in its _quarto.yml; a deck wanting the navy title opts in with
+      # `data-background-color: "#2C3E50"` + `class: dark-centered`.
+      include-in-header:
+        - lucide.html
+        - practice-timer.html
+      include-after-body:
+        - control-buttons.html
+        - print-footer.html

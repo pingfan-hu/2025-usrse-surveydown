@@ -7,9 +7,8 @@ title: "`surveydown`<br><span style='font-size: 0.7em;'>An open-source platform 
 author: "<br>**Pingfan Hu**<br>George Washington University<br><br>USRSE'25"
 
 format:
-  revealjs:
+  touhou-revealjs:
     smaller: false
-    theme: styles/theme.scss
     css: styles/slides.css
     slide-number: true
     embed-resources: false

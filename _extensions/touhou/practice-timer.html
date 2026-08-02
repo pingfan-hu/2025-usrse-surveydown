@@ -1,0 +1,131 @@
+<!-- Universal practice countdown timer + bottom scrubber.
+
+Auto-wires every .practice-timer on the page, so practice partials only need:
+
+    <div class="practice-timer" data-minutes="10"></div>
+
+The play / pause / reset controls and the bottom progress scrubber are injected
+here (styled by .practice-timer / .practice-scrub in slides.scss). Per-practice
+config via data-* attributes on the .practice-timer element:
+
+    data-minutes="10"    total time in minutes (fractions ok)  [or data-total in seconds]
+    data-warn="60"       seconds-remaining at which the text turns red   (default 60)
+    data-step="1"        tick size in seconds                            (default 1)
+    data-scrub-step="5"  drag snap of the scrubber in seconds            (default 5)
+
+Each timer is matched to a scrubber inside the same slide <section> (one created
+automatically if absent), so multiple practice slides never collide — no unique
+IDs needed. If you hand-write the inner .pt-main markup or a .practice-scrub in
+the slide, those are reused instead of the injected defaults. -->
+<script>
+(function(){
+  var TIMER_HTML =
+    '<span class="pt-main" role="button" tabindex="0" title="Start / pause">' +
+      '<span class="pt-ico pt-ico-play"><i data-lucide="play" style="width:1em;height:1em;"></i></span>' +
+      '<span class="pt-ico pt-ico-pause"><i data-lucide="pause" style="width:1em;height:1em;"></i></span>' +
+      '<span class="pt-time"></span>' +
+    '</span>' +
+    '<button class="pt-reset" type="button" title="Reset" aria-label="Reset timer"><i data-lucide="rotate-ccw" style="width:1em;height:1em;"></i></button>';
+
+  function fmt(s){ var m = Math.floor(s / 60), x = s % 60; return m + ':' + (x < 10 ? '0' : '') + x; }
+
+  function wire(el){
+    if(el.dataset.wired) return;
+    el.dataset.wired = '1';
+
+    if(!el.querySelector('.pt-main')) el.innerHTML = TIMER_HTML;
+    var main = el.querySelector('.pt-main');
+    var resetBtn = el.querySelector('.pt-reset');
+    var display = el.querySelector('.pt-time');
+    if(!main || !resetBtn || !display) return;
+
+    var mins = parseFloat(el.getAttribute('data-minutes'));
+    var TOTAL = (!isNaN(mins) && mins > 0) ? Math.round(mins * 60)
+              : (parseInt(el.getAttribute('data-total'), 10) || 600);
+    var STEP = parseInt(el.getAttribute('data-step'), 10) || 1;
+    var WARN = el.hasAttribute('data-warn') ? (parseInt(el.getAttribute('data-warn'), 10) || 0) : 60;
+    var SCRUB_STEP = parseInt(el.getAttribute('data-scrub-step'), 10) || 5;
+
+    var section = el.closest('section') || el.parentNode;
+    var scrub = section ? section.querySelector('.practice-scrub') : null;
+    if(!scrub){
+      scrub = document.createElement('input');
+      scrub.type = 'range';
+      scrub.className = 'practice-scrub';
+      scrub.setAttribute('aria-label', 'Countdown scrubber');
+      el.insertAdjacentElement('afterend', scrub);
+    }
+    scrub.min = 0; scrub.max = TOTAL; scrub.step = 1; scrub.value = TOTAL;
+
+    var remaining = TOTAL, id = null, dragging = false, pressing = false, audioCtx = null;
+
+    function ensureAudio(){
+      if(!audioCtx){ try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){ audioCtx = null; } }
+      if(audioCtx && audioCtx.state === 'suspended'){ audioCtx.resume(); }
+    }
+    function chime(){
+      if(!audioCtx) return;
+      var now = audioCtx.currentTime;
+      [880, 1108.73, 1318.51].forEach(function(f, i){
+        var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = 'sine'; o.frequency.value = f;
+        o.connect(g); g.connect(audioCtx.destination);
+        var t = now + i * 0.18;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.3, t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
+        o.start(t); o.stop(t + 0.55);
+      });
+    }
+    function render(){
+      display.textContent = fmt(remaining);
+      el.classList.toggle('pt-warning', remaining <= WARN && remaining > 0);
+      scrub.style.setProperty('--fill', (remaining / TOTAL * 100) + '%');
+      if(!dragging) scrub.value = remaining;
+    }
+    function showScrub(v){ scrub.classList.toggle('pt-visible', v); }
+    function stop(){ if(id){ clearInterval(id); id = null; } el.classList.remove('pt-running'); showScrub(false); }
+    function tick(){
+      if(pressing) return; // hold steady while the button is pressed; act on release like play/reset
+      remaining -= STEP;
+      if(remaining <= 0){ remaining = 0; render(); stop(); el.classList.add('pt-done'); chime(); return; }
+      render();
+    }
+    function start(){
+      if(id) return;
+      ensureAudio();
+      if(remaining <= 0){ remaining = TOTAL; el.classList.remove('pt-done'); render(); }
+      id = setInterval(tick, STEP * 1000);
+      el.classList.remove('pt-paused');
+      el.classList.add('pt-running');
+      showScrub(true);
+    }
+    function toggle(){ if(id){ stop(); el.classList.add('pt-paused'); } else { start(); } }
+    function reset(){ stop(); remaining = TOTAL; dragging = false; el.classList.remove('pt-done'); el.classList.remove('pt-paused'); scrub.value = TOTAL; render(); }
+
+    main.addEventListener('click', toggle);
+    main.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); } });
+    main.addEventListener('pointerdown', function(){ pressing = true; });
+    main.addEventListener('pointerup', function(){ pressing = false; });
+    main.addEventListener('pointerleave', function(){ pressing = false; });
+    main.addEventListener('pointercancel', function(){ pressing = false; });
+    resetBtn.addEventListener('click', function(e){ e.stopPropagation(); reset(); });
+    scrub.addEventListener('input', function(){ dragging = true; remaining = Math.round((parseInt(scrub.value, 10) || 0) / SCRUB_STEP) * SCRUB_STEP; scrub.value = remaining; if(remaining > 0) el.classList.remove('pt-done'); render(); });
+    ['change', 'pointerup', 'pointercancel', 'mouseup', 'touchend', 'blur'].forEach(function(ev){
+      scrub.addEventListener(ev, function(){ dragging = false; });
+    });
+
+    render();
+  }
+
+  function wireAll(){
+    var nodes = document.querySelectorAll('.practice-timer');
+    for(var i = 0; i < nodes.length; i++) wire(nodes[i]);
+    if(window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wireAll);
+  else wireAll();
+  window.addEventListener('load', wireAll);
+})();
+</script>

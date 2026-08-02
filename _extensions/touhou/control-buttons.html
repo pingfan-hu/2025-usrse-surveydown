@@ -1,0 +1,412 @@
+<!-- Deck corner controls (bottom-left group).
+
+Lives INSIDE the deck (injected via include-after-body from each deck's
+_quarto.yml), not in the parent website page. That way it belongs to the slide
+document itself: it survives fullscreen (which fullscreens the iframe's
+document, hiding anything pinned on the parent page), and it also shows when a
+deck is opened standalone.
+
+Builds one fixed .deck-controls wrapper in the bottom-left corner: the
+hamburger menu button at the very bottom (relocated out of the reveal-menu
+plugin's spot, always visible), an up-arrow handle above it, and a
+collapsible tray above the arrow holding, bottom to top, Full Screen ("F"),
+Slide Overview ("O"), and Home. Styled by .deck-controls / .deck-ctrl in
+slides.scss; expansion is one JS-owned .is-open class on the flyout (arrow +
+tray, hamburger excluded): hover opens, leaving closes, and clicking the
+arrow toggles it either way, with CSS :focus-within covering keyboard users.
+The whole group is hidden while overview mode is active (and the export view
+hides it via CSS), so it only exists on the normal slide layout.
+
+Also owns overview focus: entering overview yanks browser focus out of
+whatever slide content held it (an embedded iframe keeps focus after you
+interact with it, and scrolling then keeps targeting that iframe instead of
+the overview grid) and parks it on the .slides scroll container. -->
+<script>
+(function () {
+  var ICONS = {
+    house:
+      '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>' +
+      '<polyline points="9 22 9 12 15 12 15 22"/>',
+    grid:
+      '<rect width="7" height="7" x="3" y="3" rx="1"/>' +
+      '<rect width="7" height="7" x="14" y="3" rx="1"/>' +
+      '<rect width="7" height="7" x="14" y="14" rx="1"/>' +
+      '<rect width="7" height="7" x="3" y="14" rx="1"/>',
+    maximize:
+      '<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/>' +
+      '<path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>',
+    minimize:
+      '<path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/>' +
+      '<path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/>',
+    chevronUp: '<path d="m18 15-6-6-6 6"/>',
+    redo:
+      '<path d="m15 14 5-5-5-5"/>' +
+      '<path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/>'
+  };
+  // Inline Lucide SVGs so nothing depends on lucide.createIcons() timing.
+  var svg = function (icon) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"' +
+      ' fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"' +
+      ' stroke-linejoin="round" aria-hidden="true">' + ICONS[icon] + '</svg>';
+  };
+  var mkBtn = function (icon, label, onClick) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'deck-ctrl';
+    b.setAttribute('aria-label', label);
+    b.title = label;
+    b.innerHTML = svg(icon);
+    b.addEventListener('click', function () {
+      onClick();
+      b.blur(); // drop the focus ring after a mouse click
+    });
+    return b;
+  };
+
+  var wrap = document.createElement('div');
+  wrap.className = 'deck-controls';
+  var tray = document.createElement('div');
+  tray.className = 'deck-controls-tray';
+  var stack = document.createElement('div');
+  stack.className = 'deck-controls-stack';
+  tray.appendChild(stack);
+
+  // ---- Home / Resume toggle ----
+  // Jumping home from a non-home slide remembers the departure slide and
+  // flips the button into a resume button; clicking again jumps back and
+  // flips it home. Clicking home while already at home stores nothing. The
+  // state lives in sessionStorage with the same scope as the parent site's
+  // deckpos slide-position memory (same-origin iframe, shared per-tab
+  // storage): it survives switching to other site pages and refreshes, and
+  // dies with the tab, so a fresh window never starts with a resume pending.
+  // Manually leaving the home slide while a resume is pending discards it
+  // (you've moved on, and it keeps the stored slide from going stale).
+  var RESUME_KEY = 'deckresume:' + location.pathname;
+  var loadResume = function () {
+    try { return JSON.parse(sessionStorage.getItem(RESUME_KEY) || 'null'); }
+    catch (e) { return null; }
+  };
+  var saveResume = function (indices) {
+    try { sessionStorage.setItem(RESUME_KEY, JSON.stringify(indices)); }
+    catch (e) { /* storage blocked (private mode): resume just won't persist */ }
+  };
+  var clearResume = function () {
+    try { sessionStorage.removeItem(RESUME_KEY); }
+    catch (e) { /* ignore */ }
+  };
+
+  // Tray order, top to bottom: home, overview, full screen. The hamburger is
+  // not in the tray; it is adopted into the wrapper below the flyout.
+  var homeBtn = mkBtn('house', 'First slide', function () {
+    if (!(window.Reveal && Reveal.slide)) return;
+    var pending = loadResume();
+    if (pending && typeof pending.h === 'number') {
+      // The jump below fires slidechanged onto a non-home slide; without the
+      // flag the manual-navigation listener would read that as "moved on".
+      suppressResumeClear = true;
+      Reveal.slide(pending.h, pending.v || 0, pending.f);
+      clearResume();
+      setHomeState(false);
+    } else {
+      var idx = Reveal.getIndices ? Reveal.getIndices() : { h: 0, v: 0 };
+      if (idx.h !== 0 || (idx.v || 0) !== 0) {
+        saveResume(idx);
+        setHomeState(true);
+      }
+      Reveal.slide(0, 0, 0);
+    }
+  });
+  var setHomeState = function (resume) {
+    var label = resume ? 'Resume where you left' : 'First slide';
+    homeBtn.innerHTML = svg(resume ? 'redo' : 'house');
+    homeBtn.title = label;
+    homeBtn.setAttribute('aria-label', label);
+  };
+  var suppressResumeClear = false;
+  setHomeState(!!loadResume()); // restore the pending state across page switches
+  stack.appendChild(homeBtn);
+  stack.appendChild(mkBtn('grid', 'Slide overview (O)', function () {
+    if (window.Reveal && Reveal.toggleOverview) Reveal.toggleOverview();
+  }));
+  // ---- Full screen / exit toggle ----
+  // Pure UI state: the click is always the same one toggle, and the icon and
+  // label follow the browser's fullscreenchange event, so entering or leaving
+  // fullscreen via the F key or Esc keeps the button honest too.
+  var isFullscreen = function () {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+  };
+  var fsBtn = mkBtn('maximize', 'Full screen (F)', function () {
+    var d = document, el = d.documentElement;
+    if (isFullscreen()) {
+      (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+    } else if (el.requestFullscreen || el.webkitRequestFullscreen) {
+      (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+    }
+  });
+  var setFsState = function (active) {
+    var label = active ? 'Exit full screen (F)' : 'Full screen (F)';
+    fsBtn.innerHTML = svg(active ? 'minimize' : 'maximize');
+    fsBtn.title = label;
+    fsBtn.setAttribute('aria-label', label);
+  };
+  var syncFs = function () { setFsState(isFullscreen()); };
+  document.addEventListener('fullscreenchange', syncFs);
+  document.addEventListener('webkitfullscreenchange', syncFs);
+  stack.appendChild(fsBtn);
+
+  // The arrow is a hover handle; the click toggle is for touch and keyboard,
+  // where hover never fires. Collapse follows the cursor leaving the FLYOUT
+  // (arrow plus tray, not any single button): the buttons are children of the
+  // flyout, so moving from the arrow onto the tray keeps it open. The
+  // hamburger lives outside the flyout, so hovering it expands nothing.
+  var arrow = document.createElement('button');
+  arrow.type = 'button';
+  arrow.className = 'deck-ctrl deck-controls-arrow';
+  arrow.setAttribute('aria-label', 'Deck controls');
+  arrow.title = 'Deck controls';
+  arrow.innerHTML = svg('chevronUp');
+  var flyout = document.createElement('div');
+  flyout.className = 'deck-controls-flyout';
+  // One shared open state: hover opens and leaving closes, and a click on
+  // the arrow toggles it either way, including closing while still hovered
+  // (which is why hover lives here and not in a CSS :hover rule; CSS would
+  // force the tray open under the cursor and eat the click-to-close).
+  arrow.addEventListener('click', function () {
+    flyout.classList.toggle('is-open');
+    arrow.blur();
+  });
+  flyout.addEventListener('mouseenter', function () {
+    flyout.classList.add('is-open');
+  });
+  flyout.addEventListener('mouseleave', function () {
+    flyout.classList.remove('is-open');
+  });
+
+  flyout.appendChild(tray);
+  flyout.appendChild(arrow);
+  wrap.appendChild(flyout);
+  document.body.appendChild(wrap);
+
+  // The reveal-menu plugin creates its button asynchronously inside .reveal;
+  // adopt it into the group once it exists, below the flyout so it keeps its
+  // spot in the corner. Moving the node keeps the plugin's click listener;
+  // .deck-ctrl gives it the shared tile look and the plugin's own positioning
+  // rules (all scoped under .reveal) stop matching.
+  var adoptMenuButton = function () {
+    var mb = document.querySelector('.reveal .slide-menu-button');
+    if (!mb) return false;
+    mb.classList.add('deck-ctrl');
+    wrap.appendChild(mb);
+    return true;
+  };
+
+  // Reveal initializes asynchronously; poll briefly until it is ready, then
+  // hide the group whenever overview mode is active.
+  function wire() {
+    if (!(window.Reveal && Reveal.isReady && Reveal.isReady())) return false;
+    // Reveal creates the jump-to-slide box as a bare text input (lazily, on
+    // the first "G" press), so browsers offer form-history autofill over it.
+    // Kill every input-assistance feature the moment it appears: it only
+    // ever takes a slide number. inputmode brings up a numeric keypad on
+    // touch devices; the data- attributes tell password managers to stay
+    // away.
+    var armJumpInput = function () {
+      var apply = function (ji) {
+        // type=number is the decisive stroke: contact/form-history autofill
+        // (which ignores autocomplete="off" in Safari-family browsers) never
+        // attaches to numeric fields, and the box only takes a slide number.
+        ji.type = 'number';
+        ji.min = '1';
+        ji.setAttribute('autocomplete', 'off');
+        ji.setAttribute('autocorrect', 'off');
+        ji.setAttribute('autocapitalize', 'off');
+        ji.setAttribute('spellcheck', 'false');
+        ji.setAttribute('inputmode', 'numeric');
+        ji.setAttribute('data-lpignore', 'true');
+        ji.setAttribute('data-1p-ignore', '');
+      };
+      var ji = document.querySelector('.jump-to-slide-input');
+      if (ji) { apply(ji); return; }
+      var mo = new MutationObserver(function () {
+        var found = document.querySelector('.jump-to-slide-input');
+        if (found) { apply(found); mo.disconnect(); }
+      });
+      mo.observe(document.querySelector('.reveal') || document.body,
+        { childList: true, subtree: true });
+    };
+    armJumpInput();
+    // Manually navigating off the home slide discards a pending resume (the
+    // resume click itself raises suppressResumeClear before jumping, and the
+    // jump home lands ON the home slide, so neither trips this). The parent
+    // site's position restore after a page switch re-lands on home too, so a
+    // retained resume survives it untouched.
+    Reveal.on('slidechanged', function (e) {
+      if (suppressResumeClear) { suppressResumeClear = false; return; }
+      if (((e.indexh || 0) !== 0 || (e.indexv || 0) !== 0) && loadResume()) {
+        clearResume();
+        setHomeState(false);
+      }
+    });
+    var sync = function () {
+      var over = Reveal.isOverview();
+      wrap.classList.toggle('is-hidden', over);
+      // display:none swallows the mouseleave that would clear the tap-open
+      // state, so drop it by hand while hidden.
+      if (over) flyout.classList.remove('is-open');
+    };
+    var slidesEl = function () { return document.querySelector('.reveal .slides'); };
+    var eachFrame = function (fn) {
+      var frames = document.querySelectorAll('.reveal .slides iframe');
+      for (var i = 0; i < frames.length; i++) {
+        try { fn(frames[i]); } catch (e) { /* cross-origin; ignore */ }
+      }
+    };
+    // Pull browser focus back to the overview grid. If a slide's embedded
+    // iframe was interacted with, focus sits INSIDE that iframe's document,
+    // and scrolling keeps targeting it even in overview. Blur the inner
+    // document's focus, then the iframe element, then park focus on the
+    // .slides scroll container so scrolling and keys act on the grid.
+    var refocus = function () {
+      eachFrame(function (f) {
+        var d = f.contentWindow && f.contentWindow.document;
+        if (d && d.activeElement && d.activeElement.blur) d.activeElement.blur();
+      });
+      var ae = document.activeElement;
+      if (ae && ae !== document.body && ae.blur) ae.blur();
+      window.focus();
+      var slides = slidesEl();
+      if (slides) {
+        if (!slides.hasAttribute('tabindex')) slides.setAttribute('tabindex', '-1');
+        try { slides.focus({ preventScroll: true }); } catch (e) { slides.focus(); }
+      }
+    };
+    // Belt and braces: while overview is open, make the embedded pages
+    // physically unscrollable (same-origin, so we can reach their documents).
+    // Even if the browser still routes a scroll gesture to a previously
+    // scrolled iframe, nothing moves. On top of that, forward any wheel that
+    // DOES land inside an embedded page to the overview grid: WebKit latches
+    // scroll gestures to a previously scrolled iframe and, once the iframe is
+    // frozen, those gestures would otherwise die there and the grid would
+    // feel unscrollable. Everything is restored on exit.
+    var forwardWheel = function (e) {
+      var slides = slidesEl();
+      if (!slides) return;
+      slides.scrollTop += e.deltaY;
+      e.preventDefault();
+    };
+    var freezeFrames = function (freeze) {
+      eachFrame(function (f) {
+        var w = f.contentWindow;
+        var d = w && w.document;
+        if (!d || !d.documentElement) return;
+        d.documentElement.style.overflow = freeze ? 'hidden' : '';
+        if (d.body) d.body.style.overflow = freeze ? 'hidden' : '';
+        if (freeze && !d.__ovForward) {
+          // Snapshot the page's scroll position: WebKit's latched compositor
+          // can still nudge it during overview, so it is put back on exit.
+          // Pages using the elastic-scroll module scroll on <body> (window
+          // scroll stays 0 there), so capture whichever carries the offset.
+          f.__ovScroll = {
+            x: w.scrollX || (d.body && d.body.scrollLeft) || 0,
+            y: w.scrollY || (d.body && d.body.scrollTop) || 0
+          };
+          d.__ovForward = forwardWheel;
+          d.addEventListener('wheel', d.__ovForward, { capture: true, passive: false });
+        } else if (!freeze && d.__ovForward) {
+          d.removeEventListener('wheel', d.__ovForward, { capture: true });
+          d.__ovForward = null;
+          if (f.__ovScroll) {
+            w.scrollTo(f.__ovScroll.x, f.__ovScroll.y);
+            if (d.body) {
+              d.body.scrollLeft = f.__ovScroll.x;
+              d.body.scrollTop = f.__ovScroll.y;
+            }
+            f.__ovScroll = null;
+          }
+        }
+      });
+    };
+    // In overview, wheel scrolling is left fully native, so the browser's own
+    // rubber-band bounce and momentum always apply: nothing is ever
+    // preventDefault-ed and there is no mode switching. On top of that sits
+    // one small repair for WebKit's scroll latch (the compositor can route
+    // wheel gestures to a previously scrolled iframe, even through
+    // overflow:hidden, leaving the grid dead): every wheel event that should
+    // have moved the grid is re-checked 80ms later, and if NO grid scroll
+    // happened since that event, the missed delta is applied by hand. The
+    // grid's scroll events are the liveness signal, so ordinary up-and-down
+    // scrolling that returns to the same position is never misdetected.
+    var lastGridScroll = 0;
+    document.addEventListener('scroll', function (e) {
+      if (e.target && e.target.classList &&
+          e.target.classList.contains('slides')) {
+        lastGridScroll = Date.now();
+      }
+    }, { capture: true, passive: true });
+    document.addEventListener('wheel', function (e) {
+      if (!(Reveal.isOverview && Reveal.isOverview())) return;
+      var slides = slidesEl();
+      if (!slides) return;
+      // deltaMode 1 means lines, not pixels (rare); approximate a line as 40px.
+      var delta = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY;
+      var before = slides.scrollTop;
+      var max = slides.scrollHeight - slides.clientHeight;
+      var ts = Date.now();
+      // Only meaningful when there is room to move in the wheel's direction;
+      // tiny deltas are skipped so rounding cannot fake a dead grid.
+      if (Math.abs(delta) < 4) return;
+      if (!((delta > 0 && before < max - 1) || (delta < 0 && before > 1))) return;
+      setTimeout(function () {
+        if (slides.scrollTop === before && lastGridScroll < ts &&
+            Reveal.isOverview && Reveal.isOverview()) {
+          slides.scrollTop = before + delta;
+        }
+      }, 80);
+    }, { capture: true, passive: true });
+
+    // Reveal lazy-loads media: an <img> only gets its real src once its slide
+    // comes within viewDistance (3) of the current slide, so far-away
+    // thumbnails render with empty image boxes the first time overview opens.
+    // Overview shows EVERY slide at once, so eagerly load all slide images on
+    // entry. Images only — iframes keep lazy-loading (they can be heavy, run
+    // scripts, and are frozen while overview is open anyway). Idempotent:
+    // data-src is consumed on the first pass, and reveal never un-loads imgs.
+    function loadAllImages() {
+      var imgs = document.querySelectorAll('.reveal .slides img[data-src]');
+      for (var i = 0; i < imgs.length; i++) {
+        var img = imgs[i];
+        var srcset = img.getAttribute('data-srcset');
+        if (srcset) {
+          img.setAttribute('srcset', srcset);
+          img.removeAttribute('data-srcset');
+        }
+        img.setAttribute('src', img.getAttribute('data-src'));
+        img.removeAttribute('data-src');
+      }
+    }
+
+    Reveal.on('overviewshown', function () { loadAllImages(); sync(); refocus(); freezeFrames(true); });
+    Reveal.on('overviewhidden', function () {
+      sync();
+      freezeFrames(false);
+      // Drop the grid's focus so no focus ring lingers on the entered slide.
+      var slides = slidesEl();
+      if (slides && document.activeElement === slides) slides.blur();
+    });
+    sync(); // in case overview is somehow already active
+    return true;
+  }
+  // The menu plugin builds its button on its own schedule, independent of
+  // Reveal readiness, so it gets its own poll.
+  function pollMenu(budget) {
+    if (adoptMenuButton() || budget <= 0) return;
+    setTimeout(function () { pollMenu(budget - 1); }, 100);
+  }
+  function poll(budget) {
+    if (wire() || budget <= 0) return;
+    setTimeout(function () { poll(budget - 1); }, 100);
+  }
+  pollMenu(120); // ~12s
+  poll(120); // ~12s
+})();
+</script>

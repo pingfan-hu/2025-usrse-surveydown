@@ -1267,6 +1267,24 @@ $ov-pad-x: 97px; // ($ov-card-w - 1050px stage width) / 2
   // The 3D perspective is pointless once the strip transforms are gone.
   perspective: none;
 
+  // Backdrop for the grid. Left at the deck's own cream $body-bg, the light
+  // slides melt into it and the whole grid reads as one flat sheet. A pale
+  // blue-gray separates them by HUE rather than brightness (cool ground behind
+  // warm slides), and the navy .dark-centered ones still stand out sharply.
+  // The color is $navy mixed with white, so the panel belongs to the palette
+  // instead of being an arbitrary gray. The vignette on top is navy-tinted for
+  // the same reason: the corners fall off toward the deck's own dark hue, not
+  // toward black. background-attachment pins the vignette to the VIEWPORT while
+  // the base gradient scrolls with the grid, so the falloff always frames the
+  // screen instead of stretching over the full scroll height.
+  background-color: #D9E0E8;
+  background-image:
+    radial-gradient(ellipse farthest-corner at 50% 45%,
+      rgba(44, 62, 80, 0) 28%,
+      rgba(44, 62, 80, 0.26) 100%),
+    linear-gradient(180deg, #E0E6ED 0%, #CFD8E2 100%);
+  background-attachment: fixed, scroll;
+
   .slides {
     position: absolute !important;
     top: 0 !important;

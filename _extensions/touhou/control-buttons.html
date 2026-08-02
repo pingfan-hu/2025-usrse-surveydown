@@ -304,8 +304,8 @@ the overview grid) and parks it on the .slides scroll container. -->
         if (freeze && !d.__ovForward) {
           // Snapshot the page's scroll position: WebKit's latched compositor
           // can still nudge it during overview, so it is put back on exit.
-          // Pages using the elastic-scroll module scroll on <body> (window
-          // scroll stays 0 there), so capture whichever carries the offset.
+          // Some embedded pages scroll on <body> instead of the window
+          // (window scroll stays 0 there), so capture whichever carries it.
           f.__ovScroll = {
             x: w.scrollX || (d.body && d.body.scrollLeft) || 0,
             y: w.scrollY || (d.body && d.body.scrollTop) || 0

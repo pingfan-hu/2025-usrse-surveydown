@@ -112,5 +112,30 @@
   }, { capture: true, passive: true });
 
   window.addEventListener(EVENTS.cancel, function () { tracking = false; }, { capture: true, passive: true });
+
+  // ---- 3. Horizontal wheel in the rotated overview ----
+  // The overview grid scrolls .slides along the PAGE's y axis, which the
+  // rotation draws along the screen's x axis. So on a desktop with a narrow
+  // window the grid visibly travels sideways while the only input that moves it
+  // is a vertical wheel, which reads as backwards. (A phone never hits this: the
+  // viewer turns the device, and a finger drag scrolls the container natively.)
+  //
+  // Rather than take the vertical wheel away, accept the horizontal axis too, so
+  // a two-finger sideways swipe moves the grid the way it looks like it should.
+  // `scrollTop -= deltaX` is the sign that makes the thumbnails track the
+  // fingers: deltaX < 0 (fingers moving right) advances scrollTop, which walks
+  // the viewport down the page, which on screen slides the grid to the right.
+  var scroller = function () {
+    return document.querySelector('.reveal.overview .slides');
+  };
+  window.addEventListener('wheel', function (e) {
+    if (!rotated()) return;
+    if (!window.Reveal || !Reveal.isOverview || !Reveal.isOverview()) return;
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return; // vertical wheel: leave it alone
+    var el = scroller();
+    if (!el) return;
+    el.scrollTop -= e.deltaX;
+    e.preventDefault();
+  }, { capture: true, passive: false });
 })();
 </script>

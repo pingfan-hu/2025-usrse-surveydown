@@ -8,6 +8,13 @@ contributes:
       smaller: false
       theme: touhou.scss
       slide-number: true
+      # Always show reveal's left/right edge arrows. Quarto's default is
+      # `controls: auto`, which its quarto-support plugin resolves at runtime to
+      # `(inIframe && !localhost) || hasVerticalSlides` — so a deck opened
+      # directly (not embedded) never gets arrows, and neither does any deck
+      # served from localhost during preview. These decks are presented both
+      # ways, so pin it on rather than letting the context decide.
+      controls: true
       embed-resources: false
       auto-stretch: false
       preview-links: false

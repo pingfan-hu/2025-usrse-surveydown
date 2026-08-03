@@ -120,6 +120,36 @@ body.reveal-viewport {
     transform-origin: top left;
     transform: translateX(100vw) rotate(90deg);
   }
+
+  // Reveal only switches its nav arrows to the "edges" layout (one arrow
+  // centered on each slide edge) inside `@media (min-width: 500px)`, and that
+  // query measures the PHYSICAL viewport. Rotated, the deck is laid out along
+  // the device's long side, which clears 500px on any phone, but the physical
+  // width does not, so the arrows collapse into reveal's tiny bottom-right
+  // cluster and read as missing. Re-apply the edges layout here, with the same
+  // values reveal.css uses, so the arrows sit where the rotated slide's edges
+  // actually are.
+  .reveal-viewport { --r-controls-spacing: 0.8em; }
+
+  .reveal .controls[data-controls-layout='edges'] {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    .navigate-left,
+    .navigate-right,
+    .navigate-up,
+    .navigate-down {
+      bottom: auto;
+      right: auto;
+    }
+
+    .navigate-left  { top: 50%; left: var(--r-controls-spacing); margin-top: -1.8em; }
+    .navigate-right { top: 50%; right: var(--r-controls-spacing); margin-top: -1.8em; }
+    .navigate-up    { top: var(--r-controls-spacing); left: 50%; margin-left: -1.8em; }
+    .navigate-down  { bottom: calc(var(--r-controls-spacing) - 1.4em + 0.3em); left: 50%; margin-left: -1.8em; }
+  }
 }
 
 // === Reveal.js ===

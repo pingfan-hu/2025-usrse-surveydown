@@ -67,12 +67,21 @@ iframe { margin-bottom: 0.5em; }
 th { font-size: 24px; }
 .quarto-figure { margin-bottom: 0; }
 
-// === Orientation: the deck always uses the screen's longer side ===
-// The reveal stage is 1050x700, i.e. landscape. On a portrait viewport (a phone
-// held upright, a narrow desktop window) Reveal would scale that stage down to
-// the narrow width and leave most of the screen empty. Rotate the whole document
-// 90deg clockwise instead, sized to the SWAPPED viewport, so the slide always
-// fills the long dimension whatever the device is doing.
+// === Orientation: a handheld held upright uses the screen's longer side ===
+// The reveal stage is 1050x700, i.e. landscape. On a phone or tablet held
+// upright, Reveal would scale that stage down to the narrow width and leave most
+// of the screen empty. Rotate the whole document 90deg clockwise instead, sized
+// to the SWAPPED viewport, so the slide fills the long dimension.
+//
+// `pointer: coarse` restricts all of this to devices whose PRIMARY input is a
+// finger, which is the only case where the viewer can answer a rotated page by
+// turning the device. A desktop or laptop window dragged narrow also matches
+// `orientation: portrait`, but there the rotation is a trap: the picture turns
+// while the trackpad, scrollbars, and the overview grid keep working on the
+// screen's real axes, so scrolling down moves the deck sideways. Those machines
+// keep the deck upright and simply letterbox it, which is the pre-rotation
+// behavior. A no-touch laptop reports `pointer: fine`; an iPad reports coarse
+// even with a trackpad attached, since touch stays its primary pointer.
 //
 // Why <body> and not .reveal: Reveal derives its scale from the .reveal
 // element's offsetWidth/offsetHeight, which are PRE-transform layout values.
@@ -108,7 +117,7 @@ body.reveal-viewport {
   transition: none !important;
 }
 
-@media screen and (orientation: portrait) {
+@media screen and (orientation: portrait) and (pointer: coarse) {
   body,
   body.reveal-viewport {
     position: absolute;

@@ -78,12 +78,13 @@
     return { x: p.clientX, y: p.clientY };
   };
 
-  // Never swallow gestures meant for a control, a link, or the timer scrubber,
-  // and stay out of the way in overview, where a swipe scrolls the grid.
+  // Never swallow gestures meant for a control, a link, the timer scrubber, or
+  // an interactive htmlwidget (a plotly map tap must reach the widget), and stay
+  // out of the way in overview, where a swipe scrolls the grid.
   var passThrough = function (target) {
     if (window.Reveal && Reveal.isOverview && Reveal.isOverview()) return true;
     return !!(target && target.closest && target.closest(
-      'a, button, input, .deck-controls, .controls, .practice-scrub, [data-prevent-swipe]'
+      'a, button, input, .deck-controls, .controls, .practice-scrub, .html-widget, [data-prevent-swipe]'
     ));
   };
 

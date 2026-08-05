@@ -468,12 +468,14 @@ body.reveal-viewport {
   // partial), so the absolute offsets anchor it to the BOX, not the section:
   // it keeps the same spot relative to the box in every mode — live view,
   // overview thumbnails, and the PDF export pages — even though the section's
-  // own height differs across those modes. The negative top lifts the pill
-  // above the box's top edge; the negative right pushes it into the section's
-  // side gutter (the wrapper leaves 4% each side).
+  // own height differs across those modes. top:0 + translateY(-50%) centers
+  // the pill on the box's top edge regardless of the pill's rendered height;
+  // the negative right pushes it into the section's side gutter (the wrapper
+  // leaves 4% each side).
   .practice-timer {
     position: absolute;
-    top: -44px;
+    top: 0;
+    transform: translateY(-50%);
     right: -12px;
     z-index: 30;
     display: inline-flex;

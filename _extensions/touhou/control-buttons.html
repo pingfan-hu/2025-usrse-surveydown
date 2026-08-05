@@ -9,7 +9,8 @@ deck is opened standalone.
 Builds one fixed .deck-controls wrapper in the bottom-left corner: the
 hamburger menu button at the very bottom (relocated out of the reveal-menu
 plugin's spot, always visible), an up-arrow handle above it, and a
-collapsible tray above the arrow holding, bottom to top, Full Screen ("F"),
+collapsible tray above the arrow holding, bottom to top, Full Screen ("F";
+skipped on devices without a Fullscreen API, i.e. iPhone Safari),
 Slide Overview ("O"), and Home. Styled by .deck-controls / .deck-ctrl in
 slides.scss; expansion is one JS-owned .is-open class on the flyout (arrow +
 tray, hamburger excluded): hover opens, leaving closes, and clicking the
@@ -132,27 +133,35 @@ the overview grid) and parks it on the .slides scroll container. -->
   // Pure UI state: the click is always the same one toggle, and the icon and
   // label follow the browser's fullscreenchange event, so entering or leaving
   // fullscreen via the F key or Esc keeps the button honest too.
-  var isFullscreen = function () {
-    return !!(document.fullscreenElement || document.webkitFullscreenElement);
-  };
-  var fsBtn = mkBtn('maximize', 'Full screen (F)', function () {
-    var d = document, el = d.documentElement;
-    if (isFullscreen()) {
-      (d.exitFullscreen || d.webkitExitFullscreen).call(d);
-    } else if (el.requestFullscreen || el.webkitRequestFullscreen) {
-      (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
-    }
-  });
-  var setFsState = function (active) {
-    var label = active ? 'Exit full screen (F)' : 'Full screen (F)';
-    fsBtn.innerHTML = svg(active ? 'minimize' : 'maximize');
-    fsBtn.title = label;
-    fsBtn.setAttribute('aria-label', label);
-  };
-  var syncFs = function () { setFsState(isFullscreen()); };
-  document.addEventListener('fullscreenchange', syncFs);
-  document.addEventListener('webkitfullscreenchange', syncFs);
-  stack.appendChild(fsBtn);
+  // Only built where the Fullscreen API actually exists: iPhone Safari has no
+  // fullscreen support at all (no requestFullscreen, prefixed or not), so on
+  // those devices the button is skipped instead of shipping a dead control.
+  // iPads and Android browsers do support it and keep the button.
+  var fsSupported = !!(document.documentElement.requestFullscreen ||
+    document.documentElement.webkitRequestFullscreen);
+  if (fsSupported) {
+    var isFullscreen = function () {
+      return !!(document.fullscreenElement || document.webkitFullscreenElement);
+    };
+    var fsBtn = mkBtn('maximize', 'Full screen (F)', function () {
+      var d = document, el = d.documentElement;
+      if (isFullscreen()) {
+        (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+      } else {
+        (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+      }
+    });
+    var setFsState = function (active) {
+      var label = active ? 'Exit full screen (F)' : 'Full screen (F)';
+      fsBtn.innerHTML = svg(active ? 'minimize' : 'maximize');
+      fsBtn.title = label;
+      fsBtn.setAttribute('aria-label', label);
+    };
+    var syncFs = function () { setFsState(isFullscreen()); };
+    document.addEventListener('fullscreenchange', syncFs);
+    document.addEventListener('webkitfullscreenchange', syncFs);
+    stack.appendChild(fsBtn);
+  }
 
   // The arrow is a hover handle; the click toggle is for touch and keyboard,
   // where hover never fires. Collapse follows the cursor leaving the FLYOUT

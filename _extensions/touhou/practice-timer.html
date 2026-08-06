@@ -27,7 +27,7 @@ the slide, those are reused instead of the injected defaults. -->
     '</span>' +
     '<button class="pt-reset" type="button" title="Reset" aria-label="Reset timer"><i data-lucide="rotate-ccw" style="width:1em;height:1em;"></i></button>';
 
-  function fmt(s){ var m = Math.floor(s / 60), x = s % 60; return m + ':' + (x < 10 ? '0' : '') + x; }
+  function fmt(s){ var m = Math.floor(s / 60), x = s % 60; return (m < 10 ? '0' : '') + m + ':' + (x < 10 ? '0' : '') + x; }
 
   function wire(el){
     if(el.dataset.wired) return;

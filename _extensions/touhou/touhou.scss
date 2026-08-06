@@ -459,27 +459,28 @@ body.reveal-viewport {
   // and the centering measures the box alone.
   section.practice > h2 { display: none; }
 
-  // Practice countdown timer straddling the practice box's top-right corner.
-  // Two parts: .pt-main (play/pause + time) toggles start / pause / resume on
-  // click or Enter/Space; .pt-reset restarts the clock to its initial time.
-  // Counts down in 1s steps. The time display has a FIXED width so the pill
-  // never resizes as the digits change. The timer div lives INSIDE the
-  // position:relative box wrapper (the width:92% div in each practice
-  // partial), so the absolute offsets anchor it to the BOX, not the section:
-  // it keeps the same spot relative to the box in every mode — live view,
-  // overview thumbnails, and the PDF export pages — even though the section's
-  // own height differs across those modes. top:0 + translateY(-50%) centers
-  // the pill on the box's top edge regardless of the pill's rendered height;
-  // the negative right pushes it into the section's side gutter (the wrapper
-  // leaves 4% each side).
+  // Practice countdown timer: a rectangular tab tucked fully INSIDE the
+  // practice box's top-right corner (top:0 right:0 against the
+  // position:relative width:92% wrapper in each practice partial, whose top
+  // and right edges coincide with the amber panel's). Anchoring to the
+  // wrapper, not the section, keeps the same spot relative to the box in
+  // every mode: live view, overview thumbnails, and the PDF export pages.
+  // The top-right radius matches the panel's 16px corner so the tab nests
+  // into it; the bottom-left radius shapes the inner corner of the tab, all
+  // other corners stay square. Two parts: .pt-main (play/pause + time)
+  // toggles start / pause / resume on click or Enter/Space; .pt-reset
+  // restarts the clock to its initial time. Counts down in 1s steps. The
+  // zero-padded MM:SS readout keeps the tab from resizing as the digits
+  // change.
   .practice-timer {
     position: absolute;
     top: 0;
-    transform: translateY(-50%);
-    right: -12px;
+    right: 0;
     z-index: 30;
     display: inline-flex;
     align-items: center;
+    // All five spaces in the tab stay identical: pill side paddings, this
+    // gap, .pt-main's gap, and .pt-reset's left padding. Change together.
     gap: 0.5em;
     font-family: 'Maple Mono', monospace;
     font-weight: 700;
@@ -488,8 +489,8 @@ body.reveal-viewport {
     color: #2C3E50;
     background: #FBE6C9;
     border: 2px solid #F0CE8E;
-    border-radius: 999px;
-    padding: 0.4em 0.7em;
+    border-radius: 0 16px 0 12px;
+    padding: 0.4em 0.5em;
     user-select: none;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
     transition: box-shadow 0.15s ease;
@@ -499,18 +500,18 @@ body.reveal-viewport {
     .pt-main {
       display: inline-flex;
       align-items: center;
-      gap: 0.4em;
+      // Same as every other gap in the tab; see the pill gap note above.
+      gap: 0.5em;
       cursor: pointer;
       transition: transform 0.1s ease;
       &:active { transform: scale(0.96); }
       // Play/pause icon fades like the reset button: solid on hover, faded otherwise.
       &:hover .pt-ico { opacity: 1; }
     }
-    // Fixed width keeps the pill from resizing as the countdown text changes
-    // width (e.g. "10:00" -> "9:59" -> "0:30"). Monospace + centered.
+    // The script zero-pads to MM:SS, so the text is always exactly five
+    // monospace characters and the tab never resizes; no fixed width needed
+    // (a fixed width would add slack around the digits and skew the gaps).
     .pt-time {
-      width: 3em;
-      text-align: center;
       letter-spacing: 0.04em;
       font-variant-numeric: tabular-nums;
     }
@@ -523,7 +524,9 @@ body.reveal-viewport {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 0 0 0 0.35em;
+      // Left padding matches the pill's right padding so the icon sits
+      // exactly centered between the divider and the right border.
+      padding: 0 0 0 0.5em;
       margin: 0;
       background: transparent;
       border: none;

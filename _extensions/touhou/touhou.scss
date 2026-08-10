@@ -229,6 +229,81 @@ body.reveal-viewport {
     }
   }
 
+  // Thank-you slide: whole presenter card + logo chip are clickable links on a
+  // dark slide. Shaded cream fill (not pure white) to soften contrast against
+  // the navy background; hover brightens fill + shadow only (no translate),
+  // will-change pre-promotes the layer, :active gives the momentary press.
+  .thanks-card {
+    display: flex;
+    flex-direction: column;
+    background: #EFECE1;
+    border-radius: 16px;
+    padding: 1em 1.1em 1.1em;
+    text-align: left;
+    color: inherit !important;
+    text-decoration: none !important;
+    cursor: pointer;
+    will-change: transform;
+    backface-visibility: hidden;
+    transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.1s ease;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.2);
+
+    &:active {
+      transform: scale(0.985);
+    }
+
+    // Hover tints blue on every card (a pure-white hover reads as a
+    // barely-visible flash against the navy slide). Tint only, no glow: the
+    // resting shadow stays as is.
+    &:hover {
+      background: #E3EEFA;
+    }
+  }
+
+  .logo-chip {
+    display: flex;
+    align-items: center;
+    background: #EFECE1;
+    border-radius: 12px;
+    padding: 0.45em 0.7em;
+    cursor: pointer;
+    will-change: transform;
+    backface-visibility: hidden;
+    transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.1s ease;
+
+    &:hover {
+      background: #E3EEFA;
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+
+    // Full-width organization band (thank-you slide): spans the same width as
+    // the presenter-card grid above it. An interim tone between the cream
+    // presenter cards and the navy slide: a translucent cream wash over the
+    // navy (the dark-slide card idiom), so the org card reads as a different
+    // kind of card. The logo keeps its own small cream chip in the markup so
+    // the lockup's navy lettering stays legible on the dark band.
+    &--band {
+      width: 100%;
+      box-sizing: border-box;
+      justify-content: center;
+      gap: 0.9em;
+      background: rgba(248, 247, 240, 0.1);
+      border: 1px solid rgba(248, 247, 240, 0.14);
+      border-radius: 16px;
+
+      // Tint only, no glow. Quarto's reveal theme sets `.reveal a:hover
+      // { border: none }`, which would drop the 1px border and shift the
+      // band by a pixel; re-assert it here (same fix as .brand-pill).
+      &:hover {
+        background: rgba(123, 181, 240, 0.18);
+        border: 1px solid rgba(248, 247, 240, 0.14);
+      }
+    }
+  }
+
   // Whole-card link (practice tool cards). The entire card is the clickable
   // target — no text underline. Hover brightens the card's amber border + fill
   // and lifts it with a shadow; the press is a momentary scale on :active.
@@ -291,6 +366,17 @@ body.reveal-viewport {
     &--gold { color: #C4881A !important; &:hover { color: #C4881A !important; } }
   }
 
+  // Quarto's reveal theme darkens every link hover toward #236257, which is
+  // unreadable against dark slide fills. On dark sections, brighten the
+  // hover toward mint instead so the link stays legible. Kept ABOVE the pill
+  // rules so equally-specific pill hover colors still win the cascade.
+  .dark-centered a:hover,
+  .divider-teal a:hover,
+  .divider-blue a:hover,
+  .divider-purple a:hover {
+    color: #7FE0C8 !important;
+  }
+
   // Brand pill: inline logo-plus-wordmark hyperlink, sized to sit inside a
   // slide title ("Use [GitHub]"). The mark is a CSS mask on ::before, painted
   // with currentColor, so each brand only needs a modifier with its own
@@ -327,13 +413,47 @@ body.reveal-viewport {
     }
     &:active { transform: scale(0.96); }
 
-    &::before {
+    &::before,
+    .pill-pkg::before {
       content: "";
       width: 1.15em;
       height: 1.15em;
       background: currentColor;
       -webkit-mask: var(--brand-mark) no-repeat center / contain;
       mask: var(--brand-mark) no-repeat center / contain;
+    }
+
+    // Language segment for pills that carry both language and package
+    // identity (fake-data slide): language logo + vertical divider, forced
+    // ahead of the package mark via flex order. Fixed width so the divider
+    // sits at the same x in every pill of an equal-width set.
+    .pill-lang {
+      order: -1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2em;
+      flex-shrink: 0;
+      border-right: 1px solid #D9DEE6;
+
+      img {
+        height: 1.05em;
+        width: auto;
+        display: block;
+      }
+    }
+
+    // Package lockup wrapper: when present, the package mark moves off the
+    // pill's own ::before onto the wrapper, so mark + wordmark center
+    // together in the space right of the fixed language segment.
+    &:has(.pill-pkg)::before { content: none; }
+
+    .pill-pkg {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45em;
     }
 
     &--github {
@@ -458,6 +578,23 @@ body.reveal-viewport {
   // center. Hide it so the box wrapper is the section's only in-flow content
   // and the centering measures the box alone.
   section.practice > h2 { display: none; }
+
+  // Wrapper for the tall panel slides (both practices and the safety demo).
+  // Every size inside those partials is em-based, so the font-size here is a
+  // single knob that scales the whole panel: type, padding, gaps, and the
+  // timer tab together. These panels carry more cards than the checkpoint
+  // variant and had grown past the 700px stage, where Reveal clips rather
+  // than scrolls. Shrink this further if a panel gains another card; do NOT
+  // start trimming the inline sizes one at a time, or the panels drift out of
+  // sync with each other. The checkpoint panel is short enough to keep its
+  // own inline wrapper.
+  .practice-box {
+    position: relative;
+    width: 92%;
+    margin: 0 auto;
+    text-align: left;
+    font-size: 0.85em;
+  }
 
   // Practice countdown timer: a rectangular tab tucked fully INSIDE the
   // practice box's top-right corner (top:0 right:0 against the
@@ -683,7 +820,7 @@ body.reveal-viewport {
   }
 
   // Overrides for dark slide headings and code
-  .dark-centered {
+  .dark-centered, .divider-teal, .divider-blue, .divider-purple {
     h1, h2, h3, h4, h5, h6 { color: $light-bg !important; }
     code { color: $amber !important; }
   }
@@ -724,6 +861,86 @@ body.reveal-viewport {
   text-align: center;
 }
 
+// Plain-background section dividers: a bare `## Title {.divider-teal .center}`
+// heading with no body renders as a full-bleed colored slide, one color per
+// main idea of a deck.
+.divider-teal {
+  background-color: #276F60 !important;
+  color: $light-bg !important;
+  text-align: center;
+}
+
+.divider-blue {
+  background-color: #3A6B9E !important;
+  color: $light-bg !important;
+  text-align: center;
+}
+
+.divider-purple {
+  background-color: #5654A2 !important;
+  color: $light-bg !important;
+  text-align: center;
+}
+
+// While a divider slide is active (data-state="divider-slide" on the
+// heading), the fixed footer and slide-number overlays sit on a saturated
+// color field where the usual tan/teal/orange palette gets lost: switch
+// them to a soft off-white for the duration. Reveal adds the state class
+// to the .reveal-viewport element.
+.reveal-viewport.divider-slide {
+  .footer,
+  .slide-number, .slide-number a {
+    color: rgba(250, 249, 244, 0.8) !important;
+  }
+
+  // Links keep their hyperlink identity, just recolored for the dark field:
+  // amber at rest, and the shared dark-surface mint on hover.
+  .footer a {
+    color: $amber !important;
+
+    &:hover {
+      color: #7FE0C8 !important;
+    }
+  }
+}
+
+// Footer links follow the same dark-surface hover rule as in-slide links:
+// while any dark slide is active, hover brightens to mint. The footer lives
+// outside the sections, so match on the active slide via :has.
+.reveal:has(.slides section.present.dark-centered) .footer a:hover {
+  color: #7FE0C8 !important;
+}
+
+// Divider headings lay out as one centered row: icon tile left, title right.
+// The tile echoes the roadmap tiles; the span sits inside the h2, so em
+// values here scale with the heading font size.
+.divider-teal h2,
+.divider-blue h2,
+.divider-purple h2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45em;
+}
+
+.reveal .divider-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15em;
+  height: 1.15em;
+  border-radius: 0.28em;
+  background: rgba(255, 255, 255, 0.16);
+  flex-shrink: 0;
+
+  svg {
+    width: 0.58em;
+    height: 0.58em;
+    color: #FFFFFF;
+    stroke-width: 2;
+  }
+}
+
 // Title slide banner. The banner is a CSS background ON the #title-slide section
 // (image set per-deck via `style: "... background-image: url(figs/banner.png)"` in
 // each deck's title-slide-attributes), NOT Reveal's data-background layer. That
@@ -739,6 +956,15 @@ body.reveal-viewport {
   background-repeat: no-repeat;
   background-size: 28%;
   background-position: right 12% center;
+
+  // The banner is a background image, so it takes no layout space and long
+  // titles would run straight under the circle. At 28% size and `right 12%`,
+  // the circle starts ~63% across the 1050px stage, so the text column is
+  // capped short of that. Titles that no longer fit wrap instead of overlap.
+  > h1.title,
+  > .quarto-title-authors {
+    max-width: 58%;
+  }
 }
 
 .black-centered {

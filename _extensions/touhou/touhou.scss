@@ -257,6 +257,20 @@ body.reveal-viewport {
     // resting shadow stays as is.
     &:hover {
       background: #E3EEFA;
+
+      // Card and pill swap tones on hover: the pill takes the card's resting
+      // cream so it stays legible on the blue tint (a blue pill on the blue
+      // hover fill would disappear).
+      .instructor-link {
+        background: #EFECE1;
+      }
+    }
+
+    // Inside the card the pill is a static label (the whole card is the
+    // link); pointer-events: none blocks its own hover/press states and
+    // lets clicks fall through to the card anchor.
+    .instructor-link {
+      pointer-events: none;
     }
   }
 

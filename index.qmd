@@ -461,7 +461,7 @@ An **R script** defining the survey Shiny app.
 
 ![](figs/spiderman-oh-no.gif){width=80% .purple-border}
 
-## {style="font-size: 0.9em;" .light-centered .center}
+## {style="font-size: 0.9em;"}
 
 ::: {.column width="60%"}
 
@@ -476,7 +476,7 @@ appcode_short()
 
 :::
 
-## {style="font-size: 1em;" .light-centered .center}
+## {style="font-size: 1em;"}
 
 ::: {.column style="width: 60%; font-size: 0.9em;"}
 
@@ -532,7 +532,7 @@ Run the `surveydown` server
 ![](figs/supabase-table.png){width=100%}
 
 
-## {.light-centered .center}
+##
 
 ::: {.column style="width: 58%; font-size: 0.9em;"}
 
@@ -730,7 +730,7 @@ show_if_survey()
 show_if_app()
 ```
 
-::: {.bubble-top style="text-align: center; display: block; transform: none; top: 40%;"}
+::: {.bubble-top style="text-align: center; display: block; position: relative; left: 0; top: 0; transform: none; margin: 30px auto 0;"}
 Condition ~ Target
 
 <br>

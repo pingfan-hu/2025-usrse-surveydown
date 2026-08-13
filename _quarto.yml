@@ -20,12 +20,8 @@ format:
     center-title-slide: true
     code-block-height: 650px
     title-slide-attributes:
-      data-background-image: figs/logo-surveydown.png
-      data-background-size: 18%
-      data-background-opacity: "1"
-      data-background-position: right 20% center
       class: custom-title-slide
-      style: text-align:left;
+      style: "text-align:left; background-image: url(figs/logo-surveydown.png);"
 
 execute:
   warning: false

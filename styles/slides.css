@@ -203,3 +203,22 @@ iframe {
   vertical-align: middle;
   margin-right: 15px;
 }
+
+/* Title-slide logo is a CSS background ON the #title-slide section (image set via
+   `style: "... background-image: url(...)"` in title-slide-attributes), NOT
+   Reveal's data-background layer. That keeps it INSIDE the scaled .slides stage,
+   so it sizes, positions, and scales relative to the slide content. Same
+   treatment as the 2026 thesis-defense deck. */
+#title-slide {
+  background-repeat: no-repeat;
+  background-size: 25%;
+  background-position: right 7% center;
+}
+
+/* The theme caps title text at 58%, tuned for its default 28% logo. This
+   deck's logo is 25% at `right 7%`, so it starts ~68% across the stage;
+   widen the cap accordingly so the title lines don't wrap. */
+#title-slide > h1.title,
+#title-slide > .quarto-title-authors {
+  max-width: 66%;
+}

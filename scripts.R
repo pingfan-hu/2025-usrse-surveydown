@@ -39,7 +39,7 @@ library(surveydown)
 sd_question(
   type  = "mc",
   id    = "has_fav_hero",
-  label = "Do you have a favorite super hero?",
+  label = "Do you have a favorite superhero?",
   option = c(
     "Yes" = "yes",
     "No"  = "no"
@@ -99,7 +99,7 @@ question_text <- function(highlights = NULL) {
   text_text <- 'sd_question(
   type  = "text",
   id    = "fav_hero_name",
-  label = "Who is your favorite super hero?"
+  label = "Who is your favorite superhero?"
 )'
 
   cat(fence_start(highlights))
@@ -129,7 +129,7 @@ question_mc_buttons <- function(highlights = NULL) {
   mc_buttons_text <- 'sd_question(
   type  = "mc_buttons",
   id    = "dream_power",
-  label = "If you could have ONE superpower?",
+  label = "If you could have ONE superpower, which would you choose?",
   option = c(
     "🕸️ Web-slinging"   = "webslinging",
     "🛡️ Super Strength" = "strength",
@@ -173,7 +173,7 @@ sd_question(
 sd_question(
   type  = "text",
   id    = "fav_hero",
-  label = "Who is your favorite super hero?"
+  label = "Who is your favorite superhero?"
 )'
 
   cat(fence_start(highlights))

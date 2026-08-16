@@ -1,0 +1,70 @@
+<!-- Overview-mode navigation aids. Two behaviors the restyled overview grid
+     (touhou.scss) needs that stock reveal doesn't provide:
+
+     1. Up/Down arrows mirror Left/Right. These decks are linear strips shown
+        as a wrapping grid, so reveal's own up/down (vertical-stack
+        navigation) has nowhere to go — it preventDefaults the keys and the
+        grid feels dead. A capture-phase listener runs before reveal's
+        document handler and maps Up to previous, Down to next.
+
+     2. The grid opens on the slide you're on. In overview, .slides is a real
+        scroll container whose scrollTop persists between opens, so toggling
+        overview from slide 30 showed wherever the grid was last scrolled
+        (the top, if never scrolled). Center the current slide on open, and
+        keep the .present selection in view while arrowing around. -->
+<script>
+(function () {
+  function currentIntoView(block, smooth) {
+    var s = Reveal.getCurrentSlide();
+    if (s && s.scrollIntoView) {
+      s.scrollIntoView({
+        block: block,
+        inline: 'nearest',
+        behavior: smooth ? 'smooth' : 'auto'
+      });
+    }
+  }
+
+  // Capture phase: fires before reveal's bubble-phase document handler, and
+  // stopImmediatePropagation keeps reveal from also acting on the key.
+  document.addEventListener('keydown', function (e) {
+    if (!(window.Reveal && Reveal.isOverview && Reveal.isOverview())) return;
+    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      Reveal.left();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      Reveal.right();
+    }
+  }, true);
+
+  function setup() {
+    Reveal.on('overviewshown', function () {
+      // Next frame: the grid layout (the .overview class) must be applied
+      // before scroll geometry is meaningful.
+      requestAnimationFrame(function () { currentIntoView('center', false); });
+    });
+    Reveal.on('slidechanged', function () {
+      // 'nearest' only scrolls when the selection would leave the viewport,
+      // so browsing near the middle of the screen never jiggles the grid.
+      if (Reveal.isOverview()) currentIntoView('nearest', true);
+    });
+  }
+
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) {
+    setup();
+  } else if (window.Reveal && Reveal.on) {
+    Reveal.on('ready', setup);
+  } else {
+    window.addEventListener('load', function () {
+      if (window.Reveal && Reveal.on) {
+        if (Reveal.isReady && Reveal.isReady()) setup();
+        else Reveal.on('ready', setup);
+      }
+    });
+  }
+})();
+</script>

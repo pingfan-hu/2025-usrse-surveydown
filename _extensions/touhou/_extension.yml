@@ -7,6 +7,12 @@ contributes:
     revealjs:
       smaller: false
       theme: touhou.scss
+      # 16:10 canvas matching the Mac screens these decks are presented on.
+      # Quarto's default 1050x700 (3:2) lets tall content spill into the
+      # invisible outer margin on a 16:10 display, which then extrudes past
+      # the slide card in overview mode.
+      width: 1280
+      height: 800
       slide-number: true
       # Always show reveal's left/right edge arrows. Quarto's default is
       # `controls: auto`, which its quarto-support plugin resolves at runtime to
@@ -33,3 +39,4 @@ contributes:
         - control-buttons.html
         - print-footer.html
         - orientation.html
+        - freeze-gifs.html

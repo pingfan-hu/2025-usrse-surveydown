@@ -1,0 +1,71 @@
+<!-- Freeze animated GIFs while the slide overview is open. A GIF keeps
+     decoding frames even as a thumbnail, so a deck with several GIFs makes
+     the overview grid stutter. On `overviewshown` each GIF is snapshotted
+     onto a canvas and swapped for a static PNG data-URL; `overviewhidden`
+     restores the original animated src. Reveal lazy-loads media, so GIFs
+     that finish loading while the overview is open are caught by a
+     capturing `load` listener and frozen as they arrive. Snapshot requires
+     a same-origin image and a clean canvas — when that fails (e.g. file://
+     tainting, cross-origin GIFs), the GIF is simply left animated. -->
+<script>
+(function () {
+  function setup() {
+    var frozen = new Map();
+    var overviewOpen = false;
+
+    function freezeOne(img) {
+      if (!/\.gif(\?|#|$)/i.test(img.src) || frozen.has(img)) return;
+      if (!img.complete || !img.naturalWidth) return;
+      try {
+        var canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        var still = canvas.toDataURL('image/png');
+        frozen.set(img, img.src);
+        img.src = still;
+      } catch (e) {
+        /* tainted canvas or CORS: leave this GIF animated */
+      }
+    }
+
+    function freezeAll() {
+      document.querySelectorAll('.reveal .slides img').forEach(freezeOne);
+    }
+
+    // `load` doesn't bubble, but a capturing listener sees every image that
+    // reveal lazy-loads after the overview opened.
+    function onLateLoad(e) {
+      if (overviewOpen && e.target && e.target.tagName === 'IMG') {
+        freezeOne(e.target);
+      }
+    }
+
+    Reveal.on('overviewshown', function () {
+      overviewOpen = true;
+      freezeAll();
+      document.addEventListener('load', onLateLoad, true);
+    });
+
+    Reveal.on('overviewhidden', function () {
+      overviewOpen = false;
+      document.removeEventListener('load', onLateLoad, true);
+      frozen.forEach(function (src, img) { img.src = src; });
+      frozen.clear();
+    });
+  }
+
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) {
+    setup();
+  } else if (window.Reveal && Reveal.on) {
+    Reveal.on('ready', setup);
+  } else {
+    window.addEventListener('load', function () {
+      if (window.Reveal && Reveal.on) {
+        if (Reveal.isReady && Reveal.isReady()) setup();
+        else Reveal.on('ready', setup);
+      }
+    });
+  }
+})();
+</script>

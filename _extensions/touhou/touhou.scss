@@ -864,6 +864,33 @@ body.reveal-viewport {
   }
 }
 
+// ---- 3:2 content column on the 16:10 canvas ----
+// The 1280x800 stage is a relatively wider shape than the 3:2 canvas these
+// decks were originally laid out for, so any image sized as % of slide width
+// takes ~7% more relative height and the tightest slides spill past the
+// bottom edge. Insetting every slide's content narrows the column so
+// %-width media give that height back, with no per-slide edits. Text
+// (px-sized) is unaffected. 40px per side restores the original 3:2 column
+// (1200x800) exactly; the extra 20px is headroom for the handful of figures
+// that were authored slightly too tall even for the 3:2 canvas, so their
+// bottom edges clear the footer zone.
+$content-inset: 60px;
+
+.reveal .slides section {
+  box-sizing: border-box;
+  padding-left: $content-inset;
+  padding-right: $content-inset;
+}
+
+// PDF export (?view=print adds html.reveal-print) force-resets section
+// padding to 0, which would hand %-width images back the extra width and
+// overflow the tightest pages: restore the same inset there. Left/right
+// only — the vertical padding stays 0 like the live canvas.
+html.reveal-print div.reveal .slides section {
+  padding-left: $content-inset !important;
+  padding-right: $content-inset !important;
+}
+
 // === Slide Variants ===
 .light-centered {
   text-align: center;
@@ -923,6 +950,29 @@ body.reveal-viewport {
 // outside the sections, so match on the active slide via :has.
 .reveal:has(.slides section.present.dark-centered) .footer a:hover {
   color: #7FE0C8 !important;
+}
+
+// The fixed corner logo is transparent-backed line art whose navy panels and
+// black outlines vanish into a dark slide field: sit it on a small cream chip
+// (the same treatment as the thanks slide's .logo-chip). The chip is on
+// UNCONDITIONALLY so the logo never shifts between slides — on cream slides
+// it matches the background and disappears; on dark and divider slides it
+// reads as a chip. content-box keeps the artwork at its normal size with the
+// chip extending around it. Quarto's footer.css pins the logo bottom: 0 /
+// right: 12px (flush with the bottom edge, offset on the right); even it out
+// to a small equal inset on both sides. `div.reveal` outranks footer.css's
+// `.reveal .slide-logo` regardless of stylesheet order.
+div.reveal .slide-logo {
+  box-sizing: content-box;
+  background-color: $light-bg;
+  border-radius: 8px;
+  padding: 5px;
+  // bottom/right offset the MARGIN edge, and reveal's `.reveal img` default
+  // margin would silently pad the bottom gap — zero it so both insets are
+  // truly equal.
+  margin: 0;
+  bottom: 10px;
+  right: 10px;
 }
 
 // Divider headings lay out as one centered row: icon tile left, title right.
@@ -1591,16 +1641,19 @@ html.reveal-print .slide-menu-button {
 // - Reveal's own click handling still works: it reads data-index-h off the
 //   clicked section, so clicking any thumbnail jumps to that slide. Arrow keys
 //   still move the .present highlight and Esc/Enter exit as usual.
-$overview-scale: 0.24;
+$overview-scale: 0.215;
 
-// Thumbnail card dimensions. The reveal stage is 1050x700 (3:2), but decks are
-// presented on 16:9 screens where the stage sits letterboxed in the middle of
-// the viewport — so the thumbnail card is 16:9 (700 * 16/9 ≈ 1244) with the
-// 1050 stage centered via horizontal padding. A thumbnail then looks exactly
-// like the live slide does on screen, cream side margins included.
-$ov-card-w: 1244px;
-$ov-card-h: 700px;
-$ov-pad-x: 97px; // ($ov-card-w - 1050px stage width) / 2
+// Thumbnail card dimensions. The reveal stage is 1280x800 (16:10), matching
+// the screens these decks are presented on. In live presentation reveal keeps
+// a 10% viewport margin around the stage (margin: 0.1), so on screen content
+// always has ~5.5% breathing room per side. The card reproduces that: it is
+// the stage scaled up by 1/0.9 (1422x889, still 16:10) with the 1280x800
+// stage centered via padding — a thumbnail then looks exactly like the live
+// slide does on screen, outer margin included.
+$ov-card-w: 1422px;
+$ov-card-h: 889px;
+$ov-pad-x: 71px; // ($ov-card-w - 1280px stage width) / 2
+$ov-pad-y: 44px; // ($ov-card-h - 800px stage height) / 2
 
 .reveal.overview {
   // The 3D perspective is pointless once the strip transforms are gone.
@@ -1666,12 +1719,12 @@ $ov-pad-x: 97px; // ($ov-card-w - 1050px stage width) / 2
     // Beats the inline display:none reveal puts on slides beyond its lazy-load
     // view distance, so every slide shows in the grid.
     display: block !important;
-    // 16:9 card, with the 1050px stage centered by the side padding (border-box
-    // keeps the content box at exactly 1050px, so content lays out identically
-    // to the live slide).
+    // 16:10 card with the 1280x800 stage centered by the card padding, plus
+    // the same $content-inset the live view applies — so the content box is
+    // exactly 1200px and thumbnails lay out identically to the live slide.
     width: $ov-card-w !important;
     height: $ov-card-h !important;
-    padding: 0 $ov-pad-x !important;
+    padding: $ov-pad-y ($ov-pad-x + $content-inset) !important;
     box-sizing: border-box !important;
     // Replaces reveal's inline translate3d strip placement with a plain scale;
     // the negative margins collapse the layout box from 1244x700 down to the
@@ -1728,8 +1781,8 @@ $ov-pad-x: 97px; // ($ov-card-w - 1050px stage width) / 2
 
     // Slide number BELOW the thumbnail, hanging into the row gap. Lives in the
     // section's scaled coordinate space, so the px values are design-size and
-    // shrink by $overview-scale: top 742px renders 10px under the slide's
-    // bottom edge (700px), and the 60px row gap leaves ~36px between the
+    // shrink by $overview-scale: top 931px renders 10px under the card's
+    // bottom edge (889px), and the 60px row gap leaves ~36px between the
     // number and the next row, so the number reads as belonging to its slide.
     // display must out-!important reveal's blanket `section:after{display:none}`;
     // same specificity, and this theme loads after reveal.css, so this wins.
@@ -1737,7 +1790,7 @@ $ov-pad-x: 97px; // ($ov-card-w - 1050px stage width) / 2
       content: counter(ov-slide);
       display: block !important;
       position: absolute;
-      top: 742px;
+      top: 931px;
       left: 0;
       right: 0;
       text-align: center;
@@ -1771,13 +1824,14 @@ $ov-pad-x: 97px; // ($ov-card-w - 1050px stage width) / 2
   }
 
   // Overview shows the slide grid and NOTHING else: hide all deck chrome (the
-  // footer, slide number, progress bar, nav controls, and the jump-to-slide
-  // input). The bottom-left .deck-controls group (which now also contains the
-  // hamburger) is hidden separately by its injector script, since it lives
-  // outside .reveal. All of these live inside .reveal, so scoping on
-  // .reveal.overview restores them automatically on exit.
+  // footer, slide number, the fixed corner logo, progress bar, nav controls,
+  // and the jump-to-slide input). The bottom-left .deck-controls group (which
+  // now also contains the hamburger) is hidden separately by its injector
+  // script, since it lives outside .reveal. All of these live inside .reveal,
+  // so scoping on .reveal.overview restores them automatically on exit.
   .footer,
   .slide-number,
+  .slide-logo,
   .progress,
   .controls,
   .jump-to-slide {
@@ -1795,22 +1849,22 @@ $ov-pad-x: 97px; // ($ov-card-w - 1050px stage width) / 2
 }
 
 // ---- Footer + slide number: scale with reveal's stage ----
-// Reveal scales the .slides stage (1050x700) by S = min(availW/1050, availH/700)
+// Reveal scales the .slides stage (1280x800) by S = min(availW/1280, availH/800)
 // to fit the viewport, but the footer and slide number are position:fixed to the
 // .reveal container OUTSIDE that scaled stage, so they keep a fixed px size. On a
 // short (height-limited) viewport the stage nearly fills the height while these
 // stay large, so they overlap the shrunken content. Reproduce reveal's own scale
-// with min(designPx, designPx*vw/10.5, designPx*vh/7): capped at the design size
+// with min(designPx, designPx*vw/12.8, designPx*vh/8): capped at the design size
 // (normal and large viewports unchanged) and shrinking in lockstep with the
 // content below that. `div.reveal` outranks the quarto footer plugin's
 // `.reveal .footer` so this wins regardless of stylesheet order.
 div.reveal .footer {
-  font-size: min(18px, 1.714vw, 2.571vh);
-  bottom: min(18px, 1.714vw, 2.571vh);
+  font-size: min(18px, 1.406vw, 2.25vh);
+  bottom: min(18px, 1.406vw, 2.25vh);
 }
 
 div.reveal .slide-number {
-  font-size: min(16px, 1.524vw, 2.286vh);
-  bottom: min(10px, 0.952vw, 1.429vh);
-  right: min(10px, 0.952vw, 1.429vh);
+  font-size: min(16px, 1.25vw, 2vh);
+  bottom: min(10px, 0.781vw, 1.25vh);
+  right: min(10px, 0.781vw, 1.25vh);
 }

@@ -20,7 +20,14 @@
      containing block. Hidden slides (display:none under reveal's lazy view
      distance) measure as 0, so placement runs per-slide on
      ready/slidechanged and for the whole deck when the overview opens
-     (everything is visible there). -->
+     (everything is visible there).
+
+     Bubbles that are NOT absolutely positioned (inline position:relative
+     or static) are left alone: they sit in normal flow and position
+     themselves with margins. Keeping such bubbles in flow means the
+     slide's scrollHeight never changes at runtime, so reveal's .center
+     vertical offset — recomputed from scrollHeight on every layout() —
+     stays identical across passes and the slide cannot shift. -->
 <script>
 (function () {
   function docTop(el) {
@@ -57,6 +64,9 @@
     var prev = null;
     bubbles.forEach(function (bubble) {
       if (!bubble.offsetParent) return;
+      // In-flow bubbles (position overridden to relative/static) place
+      // themselves via margins; setting style.top would displace them.
+      if (getComputedStyle(bubble).position !== 'absolute') return;
 
       if (bubble.hasAttribute('data-stack') && prev) {
         var gap = parseFloat(bubble.getAttribute('data-stack'));

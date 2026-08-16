@@ -318,13 +318,13 @@ surveycode("11,29")
 
 ::: {.column width="48%"}
 
-::: {.bubble-left data-lines="11" style="display: block; transform: none; text-align: left;"}
+::: {.bubble-left style="display: block; position: relative; transform: none; text-align: left; width: fit-content; margin-top: 211px;"}
 Use triple-dash marker (`---`)
 
 to define survey pages
 :::
 
-::: {.fragment .bubble-left data-stack="24" style="display: block; transform: none; text-align: left;"}
+::: {.fragment .bubble-left style="display: block; position: relative; transform: none; text-align: left; width: fit-content; margin-top: 24px;"}
 Quarto fences (`:::`) also OK:
 
 <br>

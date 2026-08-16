@@ -1031,6 +1031,28 @@ div.reveal .slide-logo {
   }
 }
 
+// A background only paints within the section's own box, and reveal sizes a
+// section to its CONTENT height — so on a deck with a short title block the
+// box was shorter than the 28% circle and the banner rendered cropped top and
+// bottom. Give the title section the full stage height so the banner always
+// has the whole slide to paint in (reveal's .center offset then computes to
+// 0), and reproduce the vertical centering with flex. display needs
+// !important because reveal puts `display: block` INLINE on every visible
+// slide. Live view only: `:not(.overview)` keeps this out of the overview
+// (whose card rules on `.slides > section` would otherwise lose to this ID
+// selector and get a flex title card), and the reveal-print guard plus
+// `@media screen` keep both PDF-export paths on their own page geometry,
+// where the full-height section instead overflowed the page.
+@media screen {
+  html:not(.reveal-print) .reveal:not(.overview) #title-slide {
+    height: 100%;
+    box-sizing: border-box;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
 .black-centered {
   background-color: #000 !important;
   color: $light-bg !important;

@@ -270,7 +270,7 @@ surveycode("1-5")
 
 ::: {.column width="48%"}
 
-::: {.bubble-left style="display: block; transform: none; top: 10%;"}
+::: {.bubble-left style="display: block; transform: none;"}
 YAML header for a "clean" output
 :::
 
@@ -294,7 +294,7 @@ surveycode("7-9")
 
 ::: {.column width="48%"}
 
-::: {.bubble-left style="display: block; transform: none; top: 25%;"}
+::: {.bubble-left style="display: block; transform: none;"}
 Load the `surveydown` Package
 :::
 
@@ -318,10 +318,26 @@ surveycode("11,29")
 
 ::: {.column width="48%"}
 
-::: {.bubble-left style="display: block; transform: none; top: 32%;"}
-Use Quarto fences (`:::`)
+::: {.bubble-left data-lines="11" style="display: block; transform: none; text-align: left;"}
+Use triple-dash marker (`---`)
 
 to define survey pages
+:::
+
+::: {.fragment .bubble-left data-stack="24" style="display: block; transform: none; text-align: left;"}
+Quarto fences (`:::`) also OK:
+
+<br>
+
+`::: {#welcome .sd-page}`
+
+<br>
+
+`Page content`
+
+<br>
+
+`:::`
 :::
 
 :::
@@ -344,7 +360,7 @@ surveycode("13-27")
 
 ::: {.column width="48%"}
 
-::: {.bubble-left style="display: block; transform: none; top: 45%;"}
+::: {.bubble-left style="display: block; transform: none;"}
 Page content
 
 - Markdown for text, images, etc.
@@ -496,11 +512,11 @@ appcode_short("3,7")
 
 ::: {.column style="width: 36%; font-size: 0.7em;"}
 
-::: {.bubble-left style="display: block; transform: none; top: 22%;"}
+::: {.bubble-left data-lines="3" style="display: block; transform: none;"}
 Render `survey.qmd` as UI
 :::
 
-::: {.bubble-left style="display: block; transform: none; top: 37%;"}
+::: {.bubble-left data-lines="7" style="display: block; transform: none;"}
 Run the `surveydown` server
 :::
 
@@ -552,13 +568,13 @@ appcode_long("3,4,10")
 
 ::: {.column style="width: 40%; font-size: 0.7em;"}
 
-::: {.bubble-left style="display: block; transform: none; top: 21%;"}
+::: {.bubble-left data-lines="3,4" style="display: block; transform: none;"}
 Store credentials
 
 Connect to the database
 :::
 
-::: {.bubble-left style="display: block; transform: none; top: 47%;"}
+::: {.bubble-left data-lines="10" style="display: block; transform: none;"}
 Pass connection to `sd_server()`
 :::
 

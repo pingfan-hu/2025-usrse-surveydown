@@ -10,6 +10,8 @@ format:
   touhou-revealjs:
     smaller: false
     css: styles/slides.css
+    include-after-body:
+      - styles/bubble-align.html
     slide-number: true
     embed-resources: false
     auto-stretch: false

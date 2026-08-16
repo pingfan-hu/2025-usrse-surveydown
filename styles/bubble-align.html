@@ -1,0 +1,117 @@
+<!-- Anchor .bubble-left labels to their code highlights. These slides pair
+     a highlighted code block (surveycode("1-5"), appcode_short("3,7"), ...)
+     with callout bubbles in the opposite column. The bubbles used to carry
+     hand-tuned `top: N%` values measured against the slide box, which
+     drifted whenever the stage geometry changed (and the overview's extra
+     section padding shifted them again). Instead, anchor each bubble to the
+     code lines themselves so label and highlight share one source of truth:
+
+       - a bubble with data-lines="3,4" centers on the union of those lines;
+       - a bubble without data-lines centers on the block's full highlight
+         (its data-code-line-numbers attribute) — the single-bubble case;
+       - a bubble with data-stack (optional gap px, default 24) stacks below
+         the previous bubble — for supplementary notes that point at nothing
+         in particular.
+
+     All math uses offsetTop chains (pure layout coordinates), which ignore
+     reveal's scale transforms, and the line-anchored adjustment is a
+     relative delta on the bubble's current position, so it is idempotent
+     and independent of which ancestor is the absolute-positioning
+     containing block. Hidden slides (display:none under reveal's lazy view
+     distance) measure as 0, so placement runs per-slide on
+     ready/slidechanged and for the whole deck when the overview opens
+     (everything is visible there). -->
+<script>
+(function () {
+  function docTop(el) {
+    var y = 0;
+    while (el) { y += el.offsetTop; el = el.offsetParent; }
+    return y;
+  }
+
+  function parseLines(spec) {
+    var nums = [];
+    spec.split(',').forEach(function (tok) {
+      var m = tok.match(/^\s*(\d+)\s*-\s*(\d+)\s*$/);
+      if (m) {
+        for (var i = +m[1]; i <= +m[2]; i++) nums.push(i);
+      } else if (!isNaN(parseInt(tok, 10))) {
+        nums.push(parseInt(tok, 10));
+      }
+    });
+    return nums;
+  }
+
+  function place(section) {
+    var block = section.querySelector('[data-code-line-numbers]');
+    var bubbles = section.querySelectorAll('.bubble-left');
+    if (!block || !bubbles.length) return;
+
+    // Line spans render as <span id="cbN-K"> where K is the line number.
+    var byLine = {};
+    block.querySelectorAll('pre code > span[id]').forEach(function (s) {
+      var k = parseInt(s.id.substring(s.id.lastIndexOf('-') + 1), 10);
+      if (!isNaN(k)) byLine[k] = s;
+    });
+
+    var prev = null;
+    bubbles.forEach(function (bubble) {
+      if (!bubble.offsetParent) return;
+
+      if (bubble.hasAttribute('data-stack') && prev) {
+        var gap = parseFloat(bubble.getAttribute('data-stack'));
+        if (isNaN(gap)) gap = 24;
+        bubble.style.top = (prev.offsetTop + prev.offsetHeight + gap) + 'px';
+      } else {
+        var spec = bubble.getAttribute('data-lines') ||
+          block.getAttribute('data-code-line-numbers');
+        var nums = parseLines(spec);
+        if (nums.length) {
+          var a = byLine[Math.min.apply(null, nums)];
+          var b = byLine[Math.max.apply(null, nums)];
+          if (a && b) {
+            var target = (docTop(a) + docTop(b) + b.offsetHeight) / 2;
+            var delta = target - (docTop(bubble) + bubble.offsetHeight / 2);
+            bubble.style.top = (bubble.offsetTop + delta) + 'px';
+          }
+        }
+      }
+      prev = bubble;
+    });
+  }
+
+  function placeCurrent() {
+    var s = Reveal.getCurrentSlide();
+    if (s) place(s);
+  }
+
+  function placeAll() {
+    document.querySelectorAll('.reveal .slides section').forEach(place);
+  }
+
+  function setup() {
+    placeCurrent();
+    Reveal.on('slidechanged', placeCurrent);
+    Reveal.on('overviewshown', placeAll);
+    Reveal.on('overviewhidden', placeCurrent);
+    // Font loading can shift code-line metrics after ready.
+    window.addEventListener('load', placeCurrent);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(placeCurrent);
+    }
+  }
+
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) {
+    setup();
+  } else if (window.Reveal && Reveal.on) {
+    Reveal.on('ready', setup);
+  } else {
+    window.addEventListener('load', function () {
+      if (window.Reveal && Reveal.on) {
+        if (Reveal.isReady && Reveal.isReady()) setup();
+        else Reveal.on('ready', setup);
+      }
+    });
+  }
+})();
+</script>

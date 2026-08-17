@@ -840,7 +840,7 @@ Condition ~ Target
 :::
 
 ::: {.img-middle}
-[![](figs/member-pingfan-hu.jpg){width="25%" .round-image .purple-border}](https://pingfanhu.com) Pingfan Hu
+[![](figs/member-pingfan-hu.jpg){width="25%" .round-image .purple-border}](https://pingfan.org) Pingfan Hu
 :::
 
 ::: {.img-middle}

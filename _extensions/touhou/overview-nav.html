@@ -1,23 +1,57 @@
-<!-- Overview-mode navigation aids. Two behaviors the restyled overview grid
-     (touhou.scss) needs that stock reveal doesn't provide:
+<!-- Overview-mode navigation. The restyled overview grid (touhou.scss) gets
+     file-browser semantics instead of reveal's stock behavior, where every
+     arrow press NAVIGATED the deck (so Esc "cancelled" onto whatever the
+     arrows had landed on, and Space advanced past it):
 
-     1. Up/Down arrows mirror Left/Right. These decks are linear strips shown
-        as a wrapping grid, so reveal's own up/down (vertical-stack
-        navigation) has nowhere to go — it preventDefaults the keys and the
-        grid feels dead. A capture-phase listener runs before reveal's
-        document handler and maps Up to previous, Down to next.
+     1. Arrows move a SELECTION highlight (.ov-selected), never the deck.
+        Left/Right step one thumbnail, Up/Down jump one grid row: the column
+        count is read from the live grid geometry (how many leading items
+        share the first item's offsetTop), so it tracks the responsive
+        auto-fill columns at any viewport width. Finder-style edges: no
+        wrapping, Up in the top row and Down in the bottom row do nothing,
+        except Down from the second-to-last row into a shorter final row
+        lands on the last slide.
 
-     2. The grid opens on the slide you're on. In overview, .slides is a real
+     2. Enter or Space COMMITS: exit overview onto the selected slide.
+        A mouse click on a thumbnail commits the same way (stock reveal).
+
+     3. Escape (and O) CANCELS: reveal exits at its current slide, which is
+        still the slide overview opened from, because the arrows never
+        navigated. No interception needed — not moving the deck makes
+        reveal's own exit behavior correct.
+
+     The slide you came from keeps a muted .present outline while the strong
+     outline follows the selection, so origin and selection both stay visible.
+
+     4. The grid opens on the slide you're on. In overview, .slides is a real
         scroll container whose scrollTop persists between opens, so toggling
         overview from slide 30 showed wherever the grid was last scrolled
         (the top, if never scrolled). Center the current slide on open, and
-        keep the .present selection in view while arrowing around. -->
+        keep the selection in view while arrowing around. -->
 <script>
 (function () {
-  function currentIntoView(block, smooth) {
-    var s = Reveal.getCurrentSlide();
-    if (s && s.scrollIntoView) {
-      s.scrollIntoView({
+  var SEL = 'ov-selected';
+  var sel = -1;
+
+  function secs() {
+    return document.querySelectorAll('.reveal .slides > section');
+  }
+
+  function clearSel() {
+    var s = secs();
+    for (var k = 0; k < s.length; k++) s[k].classList.remove(SEL);
+  }
+
+  function setSel(i, block, smooth) {
+    var s = secs();
+    if (!s.length) return;
+    if (i < 0) i = 0;
+    if (i > s.length - 1) i = s.length - 1;
+    clearSel();
+    sel = i;
+    s[i].classList.add(SEL);
+    if (s[i].scrollIntoView) {
+      s[i].scrollIntoView({
         block: block,
         inline: 'nearest',
         behavior: smooth ? 'smooth' : 'auto'
@@ -25,19 +59,55 @@
     }
   }
 
+  // Columns = how many leading grid items sit in the first row. offsetTop is
+  // grid layout position (transforms don't affect it); the 2px slack absorbs
+  // sub-pixel rounding.
+  function columns() {
+    var s = secs();
+    if (!s.length) return 1;
+    var top0 = s[0].offsetTop;
+    var n = 0;
+    while (n < s.length && Math.abs(s[n].offsetTop - top0) < 2) n++;
+    return n < 1 ? 1 : n;
+  }
+
   // Capture phase: fires before reveal's bubble-phase document handler, and
   // stopImmediatePropagation keeps reveal from also acting on the key.
   document.addEventListener('keydown', function (e) {
     if (!(window.Reveal && Reveal.isOverview && Reveal.isOverview())) return;
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
-    if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      Reveal.left();
+    // A key can land before overviewshown's frame initialized the selection.
+    if (sel < 0) sel = (Reveal.getIndices() || {}).h || 0;
+
+    var s = secs();
+    var last = s.length - 1;
+    var handled = true;
+
+    if (e.key === 'ArrowLeft') {
+      if (sel > 0) setSel(sel - 1, 'nearest', true);
+    } else if (e.key === 'ArrowRight') {
+      if (sel < last) setSel(sel + 1, 'nearest', true);
+    } else if (e.key === 'ArrowUp') {
+      var up = sel - columns();
+      if (up >= 0) setSel(up, 'nearest', true);
     } else if (e.key === 'ArrowDown') {
+      var down = sel + columns();
+      if (down <= last) {
+        setSel(down, 'nearest', true);
+      } else if (s[sel] && s[last].offsetTop - s[sel].offsetTop > 2) {
+        // Shorter final row below: land on the last slide. No row below: stay.
+        setSel(last, 'nearest', true);
+      }
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      Reveal.slide(sel);
+      Reveal.toggleOverview(false);
+    } else {
+      handled = false; // Escape and everything else: reveal's own behavior
+    }
+
+    if (handled) {
       e.preventDefault();
       e.stopImmediatePropagation();
-      Reveal.right();
     }
   }, true);
 
@@ -45,12 +115,13 @@
     Reveal.on('overviewshown', function () {
       // Next frame: the grid layout (the .overview class) must be applied
       // before scroll geometry is meaningful.
-      requestAnimationFrame(function () { currentIntoView('center', false); });
+      requestAnimationFrame(function () {
+        setSel((Reveal.getIndices() || {}).h || 0, 'center', false);
+      });
     });
-    Reveal.on('slidechanged', function () {
-      // 'nearest' only scrolls when the selection would leave the viewport,
-      // so browsing near the middle of the screen never jiggles the grid.
-      if (Reveal.isOverview()) currentIntoView('nearest', true);
+    Reveal.on('overviewhidden', function () {
+      clearSel();
+      sel = -1;
     });
   }
 

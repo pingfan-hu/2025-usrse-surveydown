@@ -1686,8 +1686,10 @@ html.reveal-print .slide-menu-button {
 //   tried instead and rejected: WebKit and Blink disagree on how it interacts
 //   with grid sizing (Orion/Safari rendered oversized, cropped thumbnails).
 // - Reveal's own click handling still works: it reads data-index-h off the
-//   clicked section, so clicking any thumbnail jumps to that slide. Arrow keys
-//   still move the .present highlight and Esc/Enter exit as usual.
+//   clicked section, so clicking any thumbnail jumps to that slide. Keyboard
+//   behavior is file-browser style (overview-nav.html): arrows move the
+//   .ov-selected highlight only, Enter/Space commit, Esc cancels back to the
+//   slide overview opened from.
 $overview-scale: 0.215;
 
 // Thumbnail card dimensions. The reveal stage is 1280x800 (16:10), matching
@@ -1823,8 +1825,12 @@ $ov-pad-y: 44px; // ($ov-card-h - 800px stage height) / 2
     }
 
     // Outline widths render scaled by $overview-scale, hence the large values.
+    // The strong purple follows the keyboard SELECTION (.ov-selected, owned by
+    // overview-nav.html); .present is the slide overview opened from (where
+    // Esc returns), kept visible but muted so the two states read apart.
     &:hover { outline: 14px solid rgba(255, 184, 77, 0.9); }
-    &.present { outline: 14px solid rgba(86, 84, 162, 0.9); }
+    &.present { outline: 14px solid rgba(86, 84, 162, 0.35); }
+    &.ov-selected { outline: 14px solid rgba(86, 84, 162, 0.9); }
 
     // Slide number BELOW the thumbnail, hanging into the row gap. Lives in the
     // section's scaled coordinate space, so the px values are design-size and

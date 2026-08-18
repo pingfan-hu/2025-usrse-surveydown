@@ -35,6 +35,7 @@ contributes:
       include-in-header:
         - lucide.html
         - practice-timer.html
+        - pdf-export.html
       include-after-body:
         - control-buttons.html
         - print-footer.html

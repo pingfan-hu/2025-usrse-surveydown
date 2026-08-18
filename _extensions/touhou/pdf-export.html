@@ -1,0 +1,13 @@
+<!-- PDF capture mode flag.
+
+decktape (the PDF export pipeline) drives the LIVE deck, not the ?print-pdf
+view, so nothing in reveal marks the document as "being captured". Appending
+?pdf-export to the capture URL does: this runs in <head>, before first paint,
+and stamps the class that touhou.scss keys its capture rules on (hide live
+controls, strip blur shadows that Chromium's PDF backend prints as solid
+color blocks). Harmless everywhere else — no param, no class, zero effect. -->
+<script>
+if (/[?&]pdf-export\b/.test(window.location.search)) {
+  document.documentElement.classList.add('pdf-export');
+}
+</script>

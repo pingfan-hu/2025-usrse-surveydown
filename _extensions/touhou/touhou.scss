@@ -1444,6 +1444,31 @@ html.reveal-print .deck-controls {
   display: none !important;
 }
 
+// ---- PDF capture mode (?pdf-export) ----
+// decktape drives the LIVE deck (never the ?print-pdf view), so appending
+// ?pdf-export to the capture URL is what strips the on-screen chrome:
+// pdf-export.html puts the class on <html> before first paint. Two jobs:
+// 1. Hide every live control — corner group, hamburger, reveal's edge arrows
+//    and progress bar. All meaningless on paper.
+// 2. Kill shadows. Chromium's PDF backend (decktape's page.pdf, Playwright's
+//    page.pdf, ?view=print) cannot rasterize blur: every blurred box-shadow
+//    prints as a SOLID offset rectangle — big color blocks behind the cards.
+//    With shadows gone, the hairline tint borders carry card separation.
+//    reveal-print gets the same shadow fix so the print view exports clean.
+html.pdf-export .deck-controls,
+html.pdf-export .slide-menu-button,
+html.pdf-export .reveal .controls,
+html.pdf-export .reveal .progress,
+html.pdf-export .jump-to-slide-input {
+  display: none !important;
+}
+
+html.pdf-export *,
+html.reveal-print * {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
 // ---- PDF export footer: one per page ----
 // The export view ("E" / ?print-pdf) lays slides out as block-flow .pdf-page
 // boxes, but Quarto's footer stays a single position:fixed overlay: it floats
